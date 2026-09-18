@@ -34,6 +34,7 @@ export async function getFirestoreProductsByCategory(categoryId: string) { const
 
 export async function createFirestoreCategory(category: Omit<Category, "id"> & { id?: string }) { const ref = category.id ? db().collection("categories").doc(category.id) : db().collection("categories").doc(); await ref.set({ ...category, created_at: FieldValue.serverTimestamp(), updated_at: FieldValue.serverTimestamp() }); return ref.id; }
 export async function updateFirestoreCategory(id: string, updates: Partial<Omit<Category, "id">>) { await db().collection("categories").doc(id).set({ ...updates, updated_at: FieldValue.serverTimestamp() }, { merge: true }); }
+export async function deleteFirestoreCategory(id: string) { await db().collection("categories").doc(id).delete(); }
 export async function updateFirestoreProduct(id: string, updates: Partial<Omit<Product, "id">>) { await db().collection("products").doc(id).set({ ...updates, updated_at: FieldValue.serverTimestamp() }, { merge: true }); }
 export async function createFirestoreProduct(product: Omit<Product, "id"> & { id?: string }) { const ref = product.id ? db().collection("products").doc(product.id) : db().collection("products").doc(); await ref.set({ ...product, created_at: FieldValue.serverTimestamp(), updated_at: FieldValue.serverTimestamp() }); return ref.id; }
 export async function deleteFirestoreProduct(id: string) { await db().collection("products").doc(id).delete(); }
