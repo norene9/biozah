@@ -4,6 +4,7 @@ export type Category = {
   slug: string;
   description: string;
   image_url: string;
+  image_public_id?: string;
   active: boolean;
 };
 

@@ -1,18 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ImageUploadField } from "@/app/admin/products/image-upload-field";
 
-export function CategoryForm() {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setBusy(true); setError("");
-    const data = Object.fromEntries(new FormData(event.currentTarget));
-    const response = await fetch("/api/admin/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-    if (!response.ok) { setError((await response.json()).error ?? "Unable to create category."); setBusy(false); return; }
-    event.currentTarget.reset(); setBusy(false); router.refresh();
-  }
-  return <form className="admin-create-form" onSubmit={submit}><h2>New collection</h2><label>Name<input name="name" required placeholder="Skincare" /></label><label>Description<textarea name="description" rows={2} placeholder="A short description" /></label><label>Image URL<input name="image_url" type="url" placeholder="Optional category image URL" /></label>{error && <p className="form-error">{error}</p>}<button className="button button-dark" disabled={busy}>{busy ? "Creating..." : "Create collection"}</button></form>;
-}
+export function CategoryForm({ onCreated, onClose }: { onCreated?: () => void; onClose?: () => void }) { const router = useRouter(); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const [image, setImage] = useState({ url: "", publicId: "" }); useEffect(() => { const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose?.(); document.addEventListener("keydown", onKey); return () => document.removeEventListener("keydown", onKey); }, [onClose]); async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); setError(""); const data = Object.fromEntries(new FormData(event.currentTarget)); const response = await fetch("/api/admin/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, image_url: image.url, image_public_id: image.publicId }) }); if (!response.ok) { setError((await response.json()).error ?? "Unable to create collection."); setBusy(false); return; } setBusy(false); onCreated?.(); router.refresh(); } return <div className="collection-modal-overlay" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose?.()}><form className="collection-modal" onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-collection-title"><div className="drawer-header"><div><p className="eyebrow">Catalogue</p><h2 id="new-collection-title">New collection</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={onClose}>×</button></div><ImageUploadField folder="biozah/categories" url={image.url} publicId={image.publicId} onChange={(url, publicId) => setImage({ url, publicId })} /><label>Name<input name="name" required placeholder="Skincare" /></label><label>Description<textarea name="description" rows={3} placeholder="A short description" /></label>{error && <p className="form-error">{error}</p>}<footer className="drawer-footer"><button className="button sheet-reset" type="button" onClick={onClose}>Cancel</button><button className="button button-dark" disabled={busy}>{busy ? "Creating..." : "Create collection"}</button></footer></form></div>; }

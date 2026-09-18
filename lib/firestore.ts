@@ -16,7 +16,7 @@ function iso(value: unknown) {
 }
 
 function categoryFrom(id: string, data: FirebaseFirestore.DocumentData): Category {
-  return { id, name: String(data.name ?? ""), slug: String(data.slug ?? ""), description: String(data.description ?? ""), image_url: String(data.image_url ?? ""), active: data.active !== false };
+  return { id, name: String(data.name ?? ""), slug: String(data.slug ?? ""), description: String(data.description ?? ""), image_url: String(data.image_url ?? ""), image_public_id: data.image_public_id ? String(data.image_public_id) : undefined, active: data.active !== false };
 }
 
 function productFrom(id: string, data: FirebaseFirestore.DocumentData): Product {
