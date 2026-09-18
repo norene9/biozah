@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap');
 @import "tailwindcss";
+@import "./admin-manager.css";
 
 :root {
   --ink: #183c35;

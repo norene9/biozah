@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/firebase/server";
-import { createFirestoreProduct, updateFirestoreProduct } from "@/lib/firestore";
+import { createFirestoreProduct, deleteFirestoreProduct, updateFirestoreProduct } from "@/lib/firestore";
 
 function slugify(value: string) { return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 
@@ -19,4 +19,11 @@ export async function PATCH(request: Request) {
   const { productId, price, stock, active, featured } = body;
   if (!productId || price === undefined || !Number.isFinite(price) || price < 0 || stock === undefined || !Number.isInteger(stock) || stock < 0 || typeof active !== "boolean" || typeof featured !== "boolean") return NextResponse.json({ error: "Valid product fields are required." }, { status: 400 });
   try { await updateFirestoreProduct(productId, { price, stock, active, featured }); return NextResponse.json({ ok: true }); } catch { return NextResponse.json({ error: "Unable to update this product." }, { status: 502 }); }
+}
+
+export async function DELETE(request: Request) {
+  if (!(await getCurrentAdmin())) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  const { productId } = await request.json() as { productId?: string };
+  if (!productId) return NextResponse.json({ error: "Product is required." }, { status: 400 });
+  try { await deleteFirestoreProduct(productId); return NextResponse.json({ ok: true }); } catch { return NextResponse.json({ error: "Unable to deactivate product." }, { status: 502 }); }
 }
