@@ -11,7 +11,42 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count } = useCart();
-  async function logout() { await fetch("/api/auth/session", { method: "DELETE" }); await signOut(firebaseAuth); window.location.href = "/admin/login"; }
-  if (isAdmin) return <><aside className="admin-sidebar"><Link href="/admin" className="admin-sidebar-brand"><span className="brand-mark">b</span><span>biozah</span></Link><nav className="admin-sidebar-nav" aria-label="Admin navigation"><Link className={pathname === "/admin" ? "active" : ""} href="/admin">Dashboard</Link><Link className={pathname.startsWith("/admin/products") ? "active" : ""} href="/admin/products">Products</Link><Link className={pathname.startsWith("/admin/categories") ? "active" : ""} href="/admin/categories">Collections</Link><Link className={pathname.startsWith("/admin/orders") ? "active" : ""} href="/admin/orders">Orders</Link></nav><button className="admin-sidebar-signout" type="button" onClick={() => void logout}>Sign out</button></aside><header className="admin-mobile-header"><Link href="/admin" className="brand"><span className="brand-mark">b</span><span>biozah</span></Link><button type="button" className="menu-button" aria-label="Toggle admin navigation" onClick={() => setMobileOpen(!mobileOpen)}>☰</button>{mobileOpen && <nav className="admin-mobile-nav"><Link href="/admin">Dashboard</Link><Link href="/admin/products">Products</Link><Link href="/admin/categories">Collections</Link><Link href="/admin/orders">Orders</Link><button type="button" onClick={() => void logout}>Sign out</button></nav>}</header></>;
+
+  async function logout() {
+    try {
+      await fetch("/api/auth/session", { method: "DELETE", credentials: "same-origin" });
+    } finally {
+      try {
+        await signOut(firebaseAuth);
+      } finally {
+        window.location.replace("/admin/login");
+      }
+    }
+  }
+
+  if (isAdmin && pathname.startsWith("/admin")) {
+    return (
+      <>
+        <aside className="admin-sidebar">
+          <Link href="/admin" className="admin-sidebar-brand">
+            <span className="brand-mark">b</span>
+            <span>biozah</span>
+          </Link>
+          <nav className="admin-sidebar-nav" aria-label="Admin navigation">
+            <Link className={pathname === "/admin" ? "active" : ""} href="/admin">Dashboard</Link>
+            <Link className={pathname.startsWith("/admin/products") || pathname.startsWith("/admin/categories") ? "active" : ""} href="/admin/products">Products &amp; Collections</Link>
+            <Link className={pathname.startsWith("/admin/orders") ? "active" : ""} href="/admin/orders">Orders</Link>
+          </nav>
+          <button className="admin-sidebar-signout" type="button" onClick={() => void logout()}>Sign out</button>
+        </aside>
+        <header className="admin-mobile-header">
+          <Link href="/admin" className="brand"><span className="brand-mark">b</span><span>biozah</span></Link>
+          <button type="button" className="menu-button" aria-label="Toggle admin navigation" onClick={() => setMobileOpen(!mobileOpen)}>☰</button>
+          {mobileOpen && <nav className="admin-mobile-nav"><Link href="/admin">Dashboard</Link><Link href="/admin/products">Products &amp; Collections</Link><Link href="/admin/orders">Orders</Link><button type="button" onClick={() => void logout()}>Sign out</button></nav>}
+        </header>
+      </>
+    );
+  }
+
   return <header className="site-header"><Link href="/" className="brand"><span className="brand-mark">b</span><span>biozah</span></Link><button className="menu-button" aria-label="Toggle menu" onClick={() => setMobileOpen(!mobileOpen)}>☰</button><nav className={mobileOpen ? "nav open" : "nav"}><Link href="/">Home</Link><Link href="/products">Shop</Link><Link href="/categories">Collections</Link><Link href="/admin/login" className="admin-link">Admin</Link><Link href="/cart" className="cart-link">Bag <span>{count}</span></Link></nav></header>;
 }

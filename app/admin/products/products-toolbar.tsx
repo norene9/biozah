@@ -3,4 +3,150 @@
 import { useState } from "react";
 import { FiltersSheet } from "./filters-sheet";
 
-export function ProductsToolbar({ search, setSearch, category, setCategory, status, setStatus, sort, setSort, categories, count, onRefresh, loading = false }: { search: string; setSearch: (value: string) => void; category: string; setCategory: (value: string) => void; status: string; setStatus: (value: string) => void; sort: string; setSort: (value: string) => void; categories: { id: string; name: string }[]; count: number; onRefresh: () => void; loading?: boolean }) { const [filtersOpen, setFiltersOpen] = useState(false); const activeFilters = [category !== "all", status !== "all", sort !== "newest"].filter(Boolean).length; function clear() { setCategory("all"); setStatus("all"); setSort("newest"); } return <><div className="products-toolbar"><div className="products-search-wrap"><span aria-hidden="true">⌕</span><input className="products-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products..." aria-label="Search products" />{search && <button type="button" className="search-clear" aria-label="Clear search" onClick={() => setSearch("")}>×</button>}</div><button type="button" className="mobile-filter-button" onClick={() => setFiltersOpen(true)}>Filters {activeFilters > 0 && <b>{activeFilters}</b>}</button><div className="desktop-product-filters"><select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by collection"><option value="all">All collections</option>{categories.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select><select value={status} onChange={(event) => setStatus(event.target.value)} aria-label="Filter by status"><option value="all">All status</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="featured">Featured</option><option value="out">Out of stock</option></select><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort products"><option value="newest">Newest</option><option value="name">Name A-Z</option><option value="price">Price low-high</option><option value="stock">Stock low-high</option></select></div><button className="refresh-button" type="button" onClick={onRefresh} aria-label="Refresh" disabled={loading}>↻</button><span className="product-count">{count} products</span></div><FiltersSheet open={filtersOpen} category={category} setCategory={setCategory} status={status} setStatus={setStatus} sort={sort} setSort={setSort} categories={categories} onClose={() => setFiltersOpen(false)} onClear={clear} /></>; }
+type ProductCategory = {
+  id: string;
+  name: string;
+};
+
+type ProductsToolbarProps = {
+  search: string;
+  setSearch: (value: string) => void;
+  category: string;
+  setCategory: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
+  sort: string;
+  setSort: (value: string) => void;
+  categories: ProductCategory[];
+  count: number;
+  onRefresh: () => void;
+  loading?: boolean;
+};
+
+export function ProductsToolbar({
+  search,
+  setSearch,
+  category,
+  setCategory,
+  status,
+  setStatus,
+  sort,
+  setSort,
+  categories,
+  count,
+  onRefresh,
+  loading = false,
+}: ProductsToolbarProps) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const activeFilters = [
+    category !== "all",
+    status !== "all",
+    sort !== "newest",
+  ].filter(Boolean).length;
+
+  function clearFilters() {
+    setCategory("all");
+    setStatus("all");
+    setSort("newest");
+  }
+
+  return (
+    <>
+    
+      <div className="products-toolbar">
+        <div className="products-search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input
+            className="products-search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search products..."
+            aria-label="Search products"
+          />
+          {search && (
+            <button
+              type="button"
+              className="search-clear"
+              aria-label="Clear search"
+              onClick={() => setSearch("")}
+            >
+              ×
+            </button>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className="mobile-filter-button"
+          onClick={() => setFiltersOpen(true)}
+        >
+          Filters {activeFilters > 0 && <b>{activeFilters}</b>}
+        </button>
+
+        <div className="desktop-product-filters">
+          <select
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+            aria-label="Filter by collection"
+          >
+            <option value="all">All collections</option>
+            {categories.map((item) => (
+              <option value={item.id} key={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            aria-label="Filter by status"
+          >
+            <option value="all">All status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="featured">Featured</option>
+            <option value="out">Out of stock</option>
+          </select>
+
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value)}
+            aria-label="Sort products"
+          >
+            <option value="newest">Newest</option>
+            <option value="name">Name A-Z</option>
+            <option value="price">Price low-high</option>
+            <option value="stock">Stock low-high</option>
+          </select>
+        </div>
+
+        <button
+          className="refresh-button"
+          type="button"
+          onClick={onRefresh}
+          aria-label="Refresh"
+          disabled={loading}
+        >
+          ↻
+        </button>
+
+        <span className="product-count">{count} products</span>
+      </div>
+
+      <FiltersSheet
+        open={filtersOpen}
+        category={category}
+        setCategory={setCategory}
+        status={status}
+        setStatus={setStatus}
+        sort={sort}
+        setSort={setSort}
+        categories={categories}
+        onClose={() => setFiltersOpen(false)}
+        onClear={clearFilters}
+      />
+    </>
+  );
+}

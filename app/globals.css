@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap');
 @import "tailwindcss";
-@import "./admin-manager.css";
+@import "./admin-layout.css";
 @import "./admin-collections.css";
+@import "./catalog-reference.css";
+@import "./admin-modal.css";
 
 .admin-sidebar {
   background: #fff;
@@ -68,13 +70,22 @@
 }
 
 .admin-page .admin-container {
-  max-width: 1280px;
+  max-width: 1480px;
   padding-left: 40px;
   padding-right: 40px
 }
 
 .admin-page-header {
   padding-top: 48px
+}
+
+.admin-shell,
+.admin-shell .footer {
+  background: var(--cream);
+}
+
+.admin-shell .footer {
+  display: none;
 }
 
 @media(max-width:767px) {
