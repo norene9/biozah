@@ -776,6 +776,205 @@
     background: #a44d42;
     color: white
 }
-.collections-toolbar{align-items:center;display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}.collections-toolbar .products-search-wrap{flex:1 1 280px}.collections-toolbar select{min-height:40px;padding:8px 12px}.collection-row{align-items:flex-start;border-bottom:1px solid var(--line);display:flex;gap:24px;justify-content:space-between;padding:24px 0}.collection-row-main{align-items:flex-start;display:flex;gap:16px;min-width:240px}.collection-thumb{background:var(--pale);height:72px;overflow:hidden;width:72px}.collection-thumb img{height:100%;object-fit:cover;width:100%}.collection-row-main h2{font-size:28px;margin-bottom:7px}.collection-row-main p:last-child{color:var(--muted);font-size:13px;line-height:1.6;margin:0;max-width:360px}.collection-row-edit{align-items:flex-start;display:flex;gap:18px;max-width:560px;width:100%}.collection-row-edit .category-editor{flex:1}.collection-row-edit>.status{margin-top:8px}.collections-toolbar+.admin-create-form{margin-top:0}
-.collection-card-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.collection-card{background:#fff;border:1px solid var(--line);padding:16px}.collection-card-image{align-items:center;background:var(--pale);display:flex;height:150px;justify-content:center;margin-bottom:16px;overflow:hidden}.collection-card-image img{height:100%;object-fit:cover;width:100%}.collection-card-image span{color:var(--green);font-size:28px}.collection-card-heading{align-items:start;display:flex;gap:12px;justify-content:space-between}.collection-card-heading h2{font-size:26px}.collection-card-body>p{color:var(--muted);font-size:13px;line-height:1.6;min-height:42px}.collection-modal-overlay{align-items:center;background:rgba(24,60,53,.35);display:flex;inset:0;justify-content:center;padding:20px;position:fixed;z-index:40}.collection-modal{background:var(--cream);box-shadow:0 20px 60px rgba(24,60,53,.2);display:flex;flex-direction:column;gap:16px;max-width:560px;max-height:90dvh;overflow:auto;padding:28px;width:100%}.collection-modal label{color:var(--muted);display:flex;flex-direction:column;font-size:12px;gap:6px}.collection-modal input,.collection-modal textarea{font-size:16px}.collection-modal .drawer-image-preview{height:180px}.admin-toast{background:var(--ink);bottom:24px;color:#fff;font-size:13px;padding:12px 16px;position:fixed;right:24px;z-index:50}
-@media(max-width:767px){.collection-row{display:block}.collection-row-edit{display:block;margin-top:18px}.collection-row-edit>.status{display:inline-block;margin-top:12px}.collections-toolbar .products-search-wrap{flex-basis:100%}}
+
+.collections-toolbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px
+}
+
+.collections-toolbar .products-search-wrap {
+    flex: 1 1 280px
+}
+
+.collections-toolbar select {
+    min-height: 40px;
+    padding: 8px 12px
+}
+
+.collection-row {
+    align-items: flex-start;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    padding: 24px 0
+}
+
+.collection-row-main {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    min-width: 240px
+}
+
+.collection-thumb {
+    background: var(--pale);
+    height: 72px;
+    overflow: hidden;
+    width: 72px
+}
+
+.collection-thumb img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%
+}
+
+.collection-row-main h2 {
+    font-size: 28px;
+    margin-bottom: 7px
+}
+
+.collection-row-main p:last-child {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 360px
+}
+
+.collection-row-edit {
+    align-items: flex-start;
+    display: flex;
+    gap: 18px;
+    max-width: 560px;
+    width: 100%
+}
+
+.collection-row-edit .category-editor {
+    flex: 1
+}
+
+.collection-row-edit>.status {
+    margin-top: 8px
+}
+
+.collections-toolbar+.admin-create-form {
+    margin-top: 0
+}
+
+.collection-card-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
+}
+
+.collection-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 16px
+}
+
+.collection-card-image {
+    align-items: center;
+    background: var(--pale);
+    display: flex;
+    height: 150px;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden
+}
+
+.collection-card-image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%
+}
+
+.collection-card-image span {
+    color: var(--green);
+    font-size: 28px
+}
+
+.collection-card-heading {
+    align-items: start;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between
+}
+
+.collection-card-heading h2 {
+    font-size: 26px
+}
+
+.collection-card-body>p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 42px
+}
+
+.collection-modal-overlay {
+    align-items: center;
+    background: rgba(24, 60, 53, .35);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    z-index: 40
+}
+
+.collection-modal {
+    background: var(--cream);
+    box-shadow: 0 20px 60px rgba(24, 60, 53, .2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 560px;
+    max-height: 90dvh;
+    overflow: auto;
+    padding: 28px;
+    width: 100%
+}
+
+.collection-modal label {
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    gap: 6px
+}
+
+.collection-modal input,
+.collection-modal textarea {
+    font-size: 16px
+}
+
+.collection-modal .drawer-image-preview {
+    height: 180px
+}
+
+.admin-toast {
+    background: var(--ink);
+    bottom: 24px;
+    color: #fff;
+    font-size: 13px;
+    padding: 12px 16px;
+    position: fixed;
+    right: 24px;
+    z-index: 50
+}
+
+@media(max-width:767px) {
+    .collection-row {
+        display: block
+    }
+
+    .collection-row-edit {
+        display: block;
+        margin-top: 18px
+    }
+
+    .collection-row-edit>.status {
+        display: inline-block;
+        margin-top: 12px
+    }
+
+    .collections-toolbar .products-search-wrap {
+        flex-basis: 100%
+    }
+}
