@@ -15,9 +15,7 @@ export function CollectionEditModal({ category }: { category: Category }) {
     <div
       className="collection-modal-overlay"
       role="presentation"
-      onMouseDown={(event) =>
-        event.target === event.currentTarget && closeModal()
-      }
+      onMouseDown={(event) => event.target === event.currentTarget && closeModal()}
     >
       <section
         className="collection-modal"

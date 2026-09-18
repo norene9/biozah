@@ -1,1 +1,140 @@
-.collections-rail{min-width:0}.rail-heading h2{font-size:24px;margin:0}.quick-collection{display:flex;margin:14px 0 10px}.quick-collection input{min-width:0;padding:10px;width:100%}.quick-collection button{background:var(--ink);border:0;color:#fff;min-width:44px}.rail-all-products{align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;color:var(--ink);display:flex;gap:9px;margin:10px 0 8px;min-height:42px;padding:0 12px;text-align:left;width:100%}.rail-all-products span{flex:1;font-size:12px}.rail-all-products b{color:var(--muted);font-size:11px}.rail-all-products.active{background:var(--pale);border-color:var(--green)}.rail-collection-list{display:flex;flex-direction:column;gap:10px}.rail-collection-card{background:#fff;border:1px solid var(--line);border-radius:10px;cursor:pointer;display:grid;grid-template-columns:46px minmax(0,1fr) 38px;min-height:72px;padding:10px;position:relative}.rail-collection-card.active{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}.rail-card-image{align-items:center;background:var(--pale);border-radius:7px;display:flex;height:46px;justify-content:center;overflow:hidden;width:46px}.rail-card-image img{height:100%;object-fit:cover;width:100%}.rail-card-image span{color:var(--green);font-family:'Playfair Display',serif;font-size:24px}.rail-card-content{display:flex;flex-direction:column;gap:3px;min-width:0;padding-left:10px}.rail-card-content strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rail-card-content small{color:var(--muted);font-size:11px}.rail-card-content .status{align-self:flex-start;font-size:9px;padding:4px 6px}.rail-edit{background:transparent;border:1px solid var(--line);border-radius:7px;color:var(--muted);height:36px;width:36px}.rail-edit:hover{background:var(--pale);color:var(--ink)}.rail-new-card{background:transparent;border:1px dashed var(--green);border-radius:8px;color:var(--green);min-height:42px}@media(max-width:1023px){.rail-collection-list{flex-direction:row;overflow-x:auto}.rail-collection-card{min-width:210px}.rail-new-card{min-width:170px}}
+.collections-rail {
+  min-width: 0;
+}
+.rail-heading h2 {
+  font-size: 24px;
+  margin: 0;
+}
+.quick-collection {
+  display: flex;
+  margin: 14px 0 10px;
+}
+.quick-collection input {
+  min-width: 0;
+  padding: 10px;
+  width: 100%;
+}
+.quick-collection button {
+  background: var(--ink);
+  border: 0;
+  color: #fff;
+  min-width: 44px;
+}
+.rail-all-products {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  display: flex;
+  gap: 9px;
+  margin: 10px 0 8px;
+  min-height: 42px;
+  padding: 0 12px;
+  text-align: left;
+  width: 100%;
+}
+.rail-all-products span {
+  flex: 1;
+  font-size: 12px;
+}
+.rail-all-products b {
+  color: var(--muted);
+  font-size: 11px;
+}
+.rail-all-products.active {
+  background: var(--pale);
+  border-color: var(--green);
+}
+.rail-collection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rail-collection-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 38px;
+  min-height: 72px;
+  padding: 10px;
+  position: relative;
+}
+.rail-collection-card.active {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+.rail-card-image {
+  align-items: center;
+  background: var(--pale);
+  border-radius: 7px;
+  display: flex;
+  height: 46px;
+  justify-content: center;
+  overflow: hidden;
+  width: 46px;
+}
+.rail-card-image img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+.rail-card-image span {
+  color: var(--green);
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+}
+.rail-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-left: 10px;
+}
+.rail-card-content strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail-card-content small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.rail-card-content .status {
+  align-self: flex-start;
+  font-size: 9px;
+  padding: 4px 6px;
+}
+.rail-edit {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+  height: 36px;
+  width: 36px;
+}
+.rail-edit:hover {
+  background: var(--pale);
+  color: var(--ink);
+}
+.rail-new-card {
+  background: transparent;
+  border: 1px dashed var(--green);
+  border-radius: 8px;
+  color: var(--green);
+  min-height: 42px;
+}
+@media (max-width: 1023px) {
+  .rail-collection-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .rail-collection-card {
+    min-width: 210px;
+  }
+  .rail-new-card {
+    min-width: 170px;
+  }
+}

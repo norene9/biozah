@@ -1,1 +1,26 @@
-.collection-modal .drawer-header{align-items:center;display:flex;gap:16px;justify-content:space-between;width:100%}.collection-modal .drawer-header h2{flex:1;min-width:0;margin:0}.collection-modal .drawer-close{align-items:center;background:transparent;border:0;cursor:pointer;display:flex;flex:0 0 auto;font-size:28px;height:40px;justify-content:center;line-height:1;padding:0;width:40px}
+.collection-modal .drawer-header {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  width: 100%;
+}
+.collection-modal .drawer-header h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.collection-modal .drawer-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 28px;
+  height: 40px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 40px;
+}

@@ -59,7 +59,7 @@ export function CategoryEditor({ category }: { category: Category }) {
         Active
       </label>
       <button
-          className="button button-dark category-save-button"
+        className="button button-dark category-save-button"
         type="button"
         disabled={busy}
         onClick={() => void save()}
