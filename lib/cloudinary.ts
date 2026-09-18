@@ -17,4 +17,12 @@ export function optimizedCloudinaryUrl(publicId: string) {
   return `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto,w_1200,c_limit/${publicId}`;
 }
 
+export async function destroyCloudinaryImage(publicId: string) {
+  if (!apiSecret || !cloudName || !apiKey) throw new Error("Cloudinary is not configured.");
+  const timestamp = Math.floor(Date.now() / 1000);
+  const body = new URLSearchParams({ public_id: publicId, timestamp: String(timestamp), api_key: apiKey, signature: cloudinarySignature({ public_id: publicId, timestamp }) });
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+  if (!response.ok) throw new Error("Unable to delete the Cloudinary image.");
+}
+
 export { cloudName, apiKey };
