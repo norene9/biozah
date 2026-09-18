@@ -1,0 +1,8 @@
+import Link from "next/link";
+import { getCategories, getProducts } from "@/lib/store";
+import { ProductCard } from "@/components/product-card";
+
+export default async function Home() {
+  const [categoryList, productList] = await Promise.all([getCategories(), getProducts()]);
+  return <main><section className="hero"><div className="hero-copy"><p className="eyebrow">Beauty, made gentle</p><h1>Your everyday, a little more beautiful.</h1><p>Thoughtful formulas and small rituals for skin that feels like itself, only better.</p><Link href="/products" className="button button-dark">Explore the collection</Link></div><div className="hero-art"><span className="hero-note">Quietly effective.</span></div></section><section className="section"><div className="section-heading"><div><p className="eyebrow">Find your ritual</p><h2>Shop by feeling</h2></div><Link href="/categories" className="text-link">View all collections</Link></div><div className="category-grid">{categoryList.map((category) => <Link className="category-tile" href={`/categories/${category.slug}`} key={category.id} style={{ backgroundImage: `url(${category.image_url})` }}><div><h3>{category.name}</h3><p>{category.description}</p></div></Link>)}</div></section><section className="section" style={{paddingTop:0}}><div className="section-heading"><div><p className="eyebrow">The edit</p><h2>Good things, chosen well</h2></div><Link href="/products" className="text-link">Shop all</Link></div><div className="product-grid">{productList.filter((product) => product.featured).map((product) => <ProductCard key={product.id} product={product} />)}</div></section><section className="quote-band"><p>“The best routines are the ones you look forward to.”</p></section></main>;
+}

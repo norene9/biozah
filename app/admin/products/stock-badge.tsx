@@ -1,0 +1,1 @@
+export function StockBadge({ stock }: { stock: number }) { const tone = stock === 0 ? "stock-badge stock-out" : stock < 5 ? "stock-badge stock-low" : "stock-badge stock-good"; return <span className={tone}>{stock === 0 ? "Out of stock" : `${stock} in stock`}</span>; }

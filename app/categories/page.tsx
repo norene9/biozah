@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { getCategories } from "@/lib/store";
+export default async function CategoriesPage() { const categories = await getCategories(); return <main><section className="page-intro"><p className="eyebrow">Explore</p><h1>Find your kind of care.</h1><p>Start with what your skin, body or mood is asking for today.</p></section><section className="catalog"><div className="category-grid">{categories.map((category) => <Link className="category-tile" href={`/categories/${category.slug}`} key={category.id} style={{ backgroundImage: `url(${category.image_url})` }}><div><h3>{category.name}</h3><p>{category.description}</p></div></Link>)}</div></section></main>; }

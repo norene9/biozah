@@ -1,0 +1,3 @@
+import { getProducts } from "@/lib/store";
+import { ProductCard } from "@/components/product-card";
+export default async function ProductsPage() { const products = (await getProducts()).filter((product) => product.active); return <main><section className="page-intro"><p className="eyebrow">The complete edit</p><h1>Everything good for your ritual.</h1><p>Simple, considered formulas for skin, body and the spaces in between.</p></section><section className="catalog"><div className="product-grid">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div></section></main>; }

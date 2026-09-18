@@ -1,0 +1,4 @@
+import { notFound } from "next/navigation";
+import { getCategoryName, getProductBySlug } from "@/lib/store";
+import { AddToCart } from "@/components/add-to-cart";
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params; const product = await getProductBySlug(slug); if (!product) notFound(); return <main><div className="product-detail"><div className="detail-image" style={{ backgroundImage: `url(${product.image_url})` }} /><div className="detail-copy"><p className="eyebrow">{await getCategoryName(product.category_id)}</p><h1>{product.name}</h1><p className="price">{product.price.toLocaleString()} {product.currency}</p><p className="description">{product.description}</p><p className="availability">{product.stock > 0 ? `${product.stock} available` : "Currently unavailable"}</p><AddToCart product={product} /></div></div></main>; }

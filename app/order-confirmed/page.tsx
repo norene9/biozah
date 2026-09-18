@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default async function OrderConfirmedPage({ searchParams }: { searchParams: Promise<{ order?: string }> }) { const { order } = await searchParams; return <main><section className="confirmation"><p className="eyebrow">Thank you</p><h1>Order confirmed.</h1><p>Your order <strong>{order ?? "is on its way"}</strong> has been received. We&apos;ll be in touch shortly to confirm delivery details.</p><Link href="/products" className="button button-dark">Return to the store</Link></section></main>; }

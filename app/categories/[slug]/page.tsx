@@ -1,0 +1,4 @@
+import { notFound } from "next/navigation";
+import { getCategoryBySlug, getProductsByCategory } from "@/lib/store";
+import { ProductCard } from "@/components/product-card";
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params; const category = await getCategoryBySlug(slug); if (!category) notFound(); const products = await getProductsByCategory(slug); return <main><section className="page-intro"><p className="eyebrow">Collection</p><h1>{category.name}</h1><p>{category.description}</p></section><section className="catalog">{products.length ? <div className="product-grid">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <p>We are replenishing this collection soon.</p>}</section></main>; }
