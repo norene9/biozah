@@ -1,12 +1,17 @@
 "use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useCart } from "./cart-provider";
 import { signOut } from "firebase/auth";
+import { useCart } from "./cart-provider";
 import { firebaseAuth } from "@/lib/firebase/client";
 
 export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
-  const [open, setOpen] = useState(false); const { count } = useCart();
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { count } = useCart();
   async function logout() { await fetch("/api/auth/session", { method: "DELETE" }); await signOut(firebaseAuth); window.location.href = "/admin/login"; }
-  return <header className="site-header"><Link href="/" className="brand" onClick={() => setOpen(false)}><span className="brand-mark">b</span><span>biozah</span></Link><button className="menu-button" aria-label="Toggle menu" onClick={() => setOpen(!open)}>☰</button><nav className={open ? "nav open" : "nav"}><Link href="/" onClick={() => setOpen(false)}>Home</Link><Link href="/products" onClick={() => setOpen(false)}>Shop</Link><Link href="/categories" onClick={() => setOpen(false)}>Collections</Link>{isAdmin ? <div className="settings-menu"><button type="button" className="settings-trigger" onClick={() => setOpen(!open)}>Settings <span aria-hidden="true">⌄</span></button>{open && <div className="settings-dropdown"><Link href="/admin" onClick={() => setOpen(false)}>Dashboard</Link><Link href="/admin/products" onClick={() => setOpen(false)}>Products</Link><Link href="/admin/categories" onClick={() => setOpen(false)}>Collections</Link><Link href="/admin/orders" onClick={() => setOpen(false)}>Orders</Link><button type="button" onClick={() => void logout}>Sign out</button></div>}</div> : <Link href="/admin/login" className="admin-link" onClick={() => setOpen(false)}>Admin</Link>}<Link href="/cart" className="cart-link" onClick={() => setOpen(false)}>Bag <span>{count}</span></Link></nav></header>;
+  if (isAdmin) return <><aside className="admin-sidebar"><Link href="/admin" className="admin-sidebar-brand"><span className="brand-mark">b</span><span>biozah</span></Link><nav className="admin-sidebar-nav" aria-label="Admin navigation"><Link className={pathname === "/admin" ? "active" : ""} href="/admin">Dashboard</Link><Link className={pathname.startsWith("/admin/products") ? "active" : ""} href="/admin/products">Products</Link><Link className={pathname.startsWith("/admin/categories") ? "active" : ""} href="/admin/categories">Collections</Link><Link className={pathname.startsWith("/admin/orders") ? "active" : ""} href="/admin/orders">Orders</Link></nav><button className="admin-sidebar-signout" type="button" onClick={() => void logout}>Sign out</button></aside><header className="admin-mobile-header"><Link href="/admin" className="brand"><span className="brand-mark">b</span><span>biozah</span></Link><button type="button" className="menu-button" aria-label="Toggle admin navigation" onClick={() => setMobileOpen(!mobileOpen)}>☰</button>{mobileOpen && <nav className="admin-mobile-nav"><Link href="/admin">Dashboard</Link><Link href="/admin/products">Products</Link><Link href="/admin/categories">Collections</Link><Link href="/admin/orders">Orders</Link><button type="button" onClick={() => void logout}>Sign out</button></nav>}</header></>;
+  return <header className="site-header"><Link href="/" className="brand"><span className="brand-mark">b</span><span>biozah</span></Link><button className="menu-button" aria-label="Toggle menu" onClick={() => setMobileOpen(!mobileOpen)}>☰</button><nav className={mobileOpen ? "nav open" : "nav"}><Link href="/">Home</Link><Link href="/products">Shop</Link><Link href="/categories">Collections</Link><Link href="/admin/login" className="admin-link">Admin</Link><Link href="/cart" className="cart-link">Bag <span>{count}</span></Link></nav></header>;
 }
