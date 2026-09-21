@@ -4,6 +4,7 @@
 @import "./admin-collections.css";
 @import "./catalog-reference.css";
 @import "./admin-modal.css";
+@import "./storefront-reference.css";
 
 .admin-sidebar {
   background: #fff;

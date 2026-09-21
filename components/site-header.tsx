@@ -86,29 +86,27 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
   }
 
   return (
-    <header className="site-header">
-      <Link href="/" className="brand">
-        <span className="brand-mark">b</span>
-        <span>biozah</span>
-      </Link>
+    <header className="site-header user-header">
       <button
-        className="menu-button"
+        className="menu-button user-menu-button"
         aria-label="Toggle menu"
         onClick={() => setMobileOpen(!mobileOpen)}
       >
         ☰
       </button>
+      <Link href="/" className="brand">
+        <span className="brand-mark">b</span>
+        <span>biozah</span>
+      </Link>
       <nav className={mobileOpen ? "nav open" : "nav"}>
         <Link href="/">Home</Link>
         <Link href="/products">Shop</Link>
         <Link href="/categories">Collections</Link>
-        <Link href="/admin/login" className="admin-link">
-          Admin
-        </Link>
-        <Link href="/cart" className="cart-link">
-          Bag <span>{count}</span>
-        </Link>
       </nav>
+      <Link href="/cart" className="cart-link user-bag" aria-label={`Shopping bag, ${count} items`}>
+        <span aria-hidden="true">♧</span>
+        <b>{count}</b>
+      </Link>
     </header>
   );
 }

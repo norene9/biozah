@@ -1,0 +1,227 @@
+.pcard {
+  --pcard-ink: #1a3d36;
+  --pcard-muted: #55645f;
+  --pcard-tint: #eef2ee;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(26, 61, 54, 0.1);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--pcard-ink);
+}
+
+.pcard-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1.05;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--pcard-tint);
+}
+
+.pcard-img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.pcard-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 3rem;
+  color: rgba(26, 61, 54, 0.35);
+}
+
+.pcard-chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pcard-ink);
+}
+
+.pcard-chip--warn {
+  background: #fff3dc;
+  color: #7a4b00;
+}
+
+.pcard-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 4px 4px;
+}
+
+.pcard-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pcard-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pcard-name a:hover {
+  text-decoration: underline;
+}
+
+.pcard-price {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pcard-add {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--pcard-ink);
+  color: #fff;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.pcard-add[data-added] {
+  background: #2f7a5f;
+}
+
+.pcard-add:disabled {
+  background: #cfd6d3;
+  color: #5c6b66;
+  cursor: not-allowed;
+}
+
+.pcard-add:focus-visible,
+.pcard-name a:focus-visible,
+.pcard-media:focus-visible {
+  outline: 2px solid var(--pcard-ink);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .pcard-media:hover .pcard-img {
+    transform: scale(1.04);
+  }
+
+  .pcard-add:not(:disabled):hover {
+    background: #12302a;
+  }
+}
+
+@media (pointer: coarse) {
+  .pcard-add {
+    min-height: 44px;
+  }
+}
+
+/* Two-column phone grid: price on top, button full width below */
+@media (max-width: 480px) {
+  .pcard-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pcard-add {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcard-img,
+  .pcard-add {
+    transition: none;
+  }
+}
+
+.pcard-category {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  color: var(--pcard-muted);
+}
+.pcard-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.pcard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pcard-qty {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  border: 1px solid rgba(26, 61, 54, 0.2);
+  border-radius: 8px;
+}
+
+.pcard-qty button {
+  width: 32px;
+  height: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--pcard-ink);
+  font-size: 1.1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.pcard-qty button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pcard-qty output {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pcard-add {
+  flex: 1 1 auto;
+}
+
+@media (pointer: coarse) {
+  .pcard-qty { height: 44px; }
+  .pcard-qty button { width: 44px; }
+}
+
+@media (max-width: 480px) {
+  .pcard-qty {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .pcard-add {
+    flex: none;
+    width: 100%;
+  }
+}
