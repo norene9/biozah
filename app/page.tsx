@@ -62,44 +62,80 @@ export default async function Home() {
                 : "Carefully crafted formulas for visible, natural results."}
             </p>
           </div>
+          <div className="home-container home-container--tight">
+            <div className="home-cats-head">
+               <h2></h2>
+              <Link href="/products" className="home-cats-all">
+                View all products
+                <span className="home-cats-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </Link>
+            </div>
+          </div>
           <div className="home-product-grid">
             {displayedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
-          <div className="home-more">
-            <Link href="/products" className="text-link">
-              View all products
-            </Link>
           </div>
         </section>
       )}
 
       {categoryList.length > 0 && (
         <section className="home-container home-container--tight">
-          <div className="home-heading">
-            <h2>Shop by feeling</h2>
-            <p>Find the ritual that suits your skin today.</p>
+          <div className="home-cats-head">
+            <h2>Shop by category</h2>
+            <Link href="/categories" className="home-cats-all">
+              View all
+              <span className="home-cats-arrow" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </Link>
           </div>
-          <div className="category-grid">
+
+          <div className="home-cats">
             {categoryList.map((category) => (
-              <Link
-                className="category-tile"
-                href={`/categories/${category.slug}`}
-                key={category.id}
-                style={{ backgroundImage: `url(${category.image_url})` }}
-              >
-                <div>
-                  <h3>{category.name}</h3>
-                  <p>{category.description}</p>
-                </div>
+              <Link className="home-cat" href={`/categories/${category.slug}`} key={category.id}>
+                <span className="home-cat-arch">
+                  {category.image_url ? (
+                    <Image
+                      src={category.image_url}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 150px, 190px"
+                      className="home-cat-img"
+                    />
+                  ) : (
+                    <span className="home-cat-placeholder" aria-hidden="true">
+                      {category.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </span>
+                <span className="home-cat-name">{category.name}</span>
               </Link>
             ))}
-          </div>
-          <div className="home-more">
-            <Link href="/categories" className="text-link">
-              View all collections
-            </Link>
           </div>
         </section>
       )}

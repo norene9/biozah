@@ -1,0 +1,241 @@
+.site-header.user-header {
+  position: relative;
+
+  width: min(1440px, calc(100% - 48px));
+  height: 72px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  background: transparent;
+
+  color: #29372f;
+}
+
+/* LOGO */
+
+.user-header .brand {
+  flex-shrink: 0;
+
+  text-decoration: none;
+  color: #29372f;
+
+  display: flex;
+  align-items: center;
+}
+
+.user-header .brand-name {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+}
+
+/* NAVIGATION */
+
+.user-header .nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 27px;
+
+  white-space: nowrap;
+}
+
+.user-header .nav a {
+  position: relative;
+
+  padding: 26px 0;
+
+  text-decoration: none;
+
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+
+  color: #53635a;
+
+  transition: color 0.2s ease;
+}
+
+.user-header .nav a:hover {
+  color: #29372f;
+}
+
+.user-header .nav a.active {
+  color: #29372f;
+}
+
+/* Small line underneath active item */
+
+.user-header .nav a.active::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 19px;
+
+  height: 1px;
+
+  background: #637c6c;
+}
+
+/* RIGHT SIDE */
+
+.header-actions {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+/* SEARCH */
+
+.search-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #53635a;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.search-button:hover {
+  color: #29372f;
+}
+
+/* CART */
+
+.user-header .user-bag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  text-decoration: none;
+
+  color: #29372f;
+
+  font-size: 10px;
+}
+
+.cart-icon {
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  display: grid;
+  place-items: center;
+
+  background: #29372f;
+  color: white;
+}
+
+/* MOBILE MENU BUTTON */
+
+.user-menu-button {
+  display: none;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+
+  cursor: pointer;
+}
+
+.user-menu-button span {
+  display: block;
+
+  width: 18px;
+  height: 1px;
+
+  background: #29372f;
+}
+@media (max-width: 760px) {
+  .site-header.user-header {
+    width: calc(100% - 32px);
+    height: 64px;
+  }
+
+  .user-header .brand-name {
+    font-size: 15px;
+  }
+
+  .user-header .nav {
+    position: absolute;
+
+    top: 64px;
+    left: 0;
+    right: 0;
+
+    transform: none;
+
+    padding: 20px;
+
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+
+    background: #f4f7f3;
+
+    border-radius: 14px;
+
+    box-shadow: 0 15px 35px rgba(41, 55, 47, 0.08);
+
+    z-index: 20;
+  }
+
+  .user-header .nav.open {
+    display: flex;
+  }
+
+  .user-header .nav a {
+    width: 100%;
+
+    padding: 13px 0;
+
+    font-size: 12px;
+  }
+
+  .user-header .nav a.active::after {
+    display: none;
+  }
+
+  .header-actions {
+    margin-left: auto;
+    margin-right: 12px;
+  }
+
+  .search-button span {
+    display: none;
+  }
+
+  .user-menu-button {
+    display: flex;
+  }
+}
