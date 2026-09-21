@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { CartProvider } from "@/components/cart-provider";
-import { SiteHeader } from "@/components/site-header";
+import { LayoutShell } from "./layout-shell";
 import { getCurrentAdmin } from "@/lib/firebase/server";
 
 export const metadata: Metadata = {
@@ -11,5 +11,39 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const isAdmin = Boolean(await getCurrentAdmin());
-  return <html lang="en"><body className={isAdmin ? "admin-shell" : undefined}><CartProvider><SiteHeader isAdmin={isAdmin} />{children}<footer className="footer"><div><span className="brand"><span className="brand-mark">b</span> biozah</span><p>Small rituals. Real comfort.</p></div><div><p className="eyebrow">Need help?</p><p>hello@biozah.store<br />Algiers, Algeria</p></div><div><p className="eyebrow">Good to know</p><p>Delivery across Algeria<br />Cash on delivery available</p></div></footer></CartProvider></body></html>;
+  return (
+    <html lang="en">
+      <body className={isAdmin ? "admin-shell" : undefined}>
+        <CartProvider>
+          <LayoutShell isAdmin={isAdmin}>
+            {children}
+          </LayoutShell>
+          <footer className="footer">
+            <div>
+              <span className="brand">
+                <span className="brand-mark">b</span> biozah
+              </span>
+              <p>Small rituals. Real comfort.</p>
+            </div>
+            <div>
+              <p className="eyebrow">Need help?</p>
+              <p>
+                hello@biozah.store
+                <br />
+                Algiers, Algeria
+              </p>
+            </div>
+            <div>
+              <p className="eyebrow">Good to know</p>
+              <p>
+                Delivery across Algeria
+                <br />
+                Cash on delivery available
+              </p>
+            </div>
+          </footer>
+        </CartProvider>
+      </body>
+    </html>
+  );
 }
