@@ -380,7 +380,6 @@ h3 {
 .hero-art {
   background:
     linear-gradient(145deg, rgba(208, 225, 201, 0.2), rgba(141, 178, 153, 0.5)),
-    url("https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?auto=format&fit=crop&w=1200&q=85")
       center/cover;
   min-height: 510px;
   position: relative;

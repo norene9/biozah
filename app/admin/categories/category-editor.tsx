@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Category } from "@/types/store";
 import { ImageUploadField } from "@/app/admin/products/image-upload-field";
 
-export function CategoryEditor({ category }: { category: Category }) {
+export function CategoryEditor({ category, onSaved }: { category: Category; onSaved?: () => void }) {
   const [form, setForm] = useState({
     name: category.name,
     description: category.description,
@@ -24,8 +24,16 @@ export function CategoryEditor({ category }: { category: Category }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categoryId: category.id, ...form }),
     });
-    setMessage(response.ok ? "Saved." : ((await response.json()).error ?? "Unable to save."));
+    if (response.ok) {
+      setMessage("Saved.");
+      onSaved?.(); // ← new
+    } else {
+      setMessage((await response.json()).error ?? "Unable to save.");
+    }
     setBusy(false);
+  
+    // setMessage(response.ok ? "Saved." : ((await response.json()).error ?? "Unable to save."));
+    // setBusy(false);
   }
   return (
     <div className="category-editor">
