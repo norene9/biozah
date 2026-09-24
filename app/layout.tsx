@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const isAdmin = Boolean(await getCurrentAdmin());
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={isAdmin ? "admin-shell" : undefined}>
         <CartProvider>
           <LayoutShell isAdmin={isAdmin}>

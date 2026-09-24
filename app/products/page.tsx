@@ -1,11 +1,39 @@
-
 import { ProductCard } from "@/components/product-card";
-import { getCategories, getProducts, pickRandom } from "@/lib/store";
+import { getCategories, getProducts } from "@/lib/store";
+import { ShopFilters } from "@/components/shop-filters";
+import { SortSelect } from "@/components/sort-select";
+import "./products.css";
 
-import "./products.css"
-export default async function ProductsPage() {
-  const products = (await getProducts()).filter((product) => product.active);
-  const [categoryList, productList] = await Promise.all([getCategories(), getProducts()]);
+const PRICE_MAX = 10000;
+
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; max?: string; sort?: string }>;
+}) {
+  const params = await searchParams;
+  const [categoryList, allProducts] = await Promise.all([getCategories(), getProducts()]);
+
+  const activeCategory = params.category ?? "all";
+  const maxPrice = params.max ? Number(params.max) : PRICE_MAX;
+  const sort = params.sort ?? "featured";
+
+  let products = allProducts.filter((product) => product.active);
+
+  if (activeCategory !== "all") {
+    products = products.filter((product) => product.category_id === activeCategory);
+  }
+  if (!Number.isNaN(maxPrice) && maxPrice < PRICE_MAX) {
+    products = products.filter((product) => product.price <= maxPrice);
+  }
+
+  products = [...products].sort((a, b) => {
+    if (sort === "price-low") return a.price - b.price;
+    if (sort === "price-high") return b.price - a.price;
+    // "featured" (Best Selling) and "newest" both fall back to featured-first for now —
+    // see the note below the file about why true "newest" needs one more field.
+    return Number(b.featured) - Number(a.featured);
+  });
 
   return (
     <main className="shop-page">
@@ -13,18 +41,14 @@ export default async function ProductsPage() {
       <section className="shop-hero">
         <div className="shop-hero-content">
           <p className="eyebrow">Beauty, thoughtfully selected</p>
-
           <h1>SHOP</h1>
-
           <p className="shop-hero-description">Discover products designed for your daily ritual.</p>
-
           <a href="#catalog" className="shop-circle-link">
             <span>Shop</span>
             <span>All Products</span>
             <span className="shop-circle-arrow">↗</span>
           </a>
         </div>
-
         <div className="shop-hero-art">
           <div className="hero-orb hero-orb-one" />
           <div className="hero-orb hero-orb-two" />
@@ -36,90 +60,26 @@ export default async function ProductsPage() {
       <section id="catalog" className="catalog-section">
         <div className="catalog-toolbar">
           <p className="catalog-count">
-            Showing <strong>{products.length}</strong> products
+            Showing <strong>{products.length}</strong> product{products.length === 1 ? "" : "s"}
           </p>
-
-          <label className="catalog-sort">
-            <span>Sort by</span>
-
-            <select defaultValue="featured">
-              <option value="featured">Best Selling</option>
-              <option value="newest">Newest</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
-          </label>
+          <SortSelect value={sort} />
         </div>
 
         <div className="catalog-layout">
-          {/* SIDEBAR */}
-          <aside className="catalog-sidebar">
-            <div className="filter-block">
-              <div className="filter-title">
-                <span>Categories</span>
-                <span>−</span>
-              </div>
+          <ShopFilters
+            categories={categoryList}
+            activeCategory={activeCategory}
+            maxPrice={maxPrice}
+            priceCeiling={PRICE_MAX}
+            totalCount={allProducts.filter((p) => p.active).length}
+          />
 
-              <label className="filter-option">
-                <input type="radio" name="category" defaultChecked />
-                <span>All Products</span>
-                <small>{products.length}</small>
-              </label>
-              {categoryList.map((category) => (
-                <label className="filter-option">
-                  <input type="radio" name="category" />
-                  <span>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</span>
-                </label>
-              ))}
-            </div>
-
-            <div className="filter-block">
-              <div className="filter-title">
-                <span>Price Range</span>
-                <span>−</span>
-              </div>
-
-              <input className="price-range" type="range" min="0" max="200" defaultValue="120" />
-
-              <div className="price-labels">
-                <span>0DA</span>
-                <span>10000DA</span>
-              </div>
-            </div>
-
-            {/* <div className="filter-block">
-              <div className="filter-title">
-                <span>Skin Type</span>
-                <span>−</span>
-              </div>
-
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                All Skin Types
-              </label>
-
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                Dry
-              </label>
-
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                Oily
-              </label>
-
-              <label className="filter-checkbox">
-                <input type="checkbox" />
-                Sensitive
-              </label>
-            </div> */}
-          </aside>
-
-          {/* PRODUCTS */}
           <div className="product-grid">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {products.length === 0 ? (
+              <p className="catalog-empty">No products match these filters.</p>
+            ) : (
+              products.map((product) => <ProductCard key={product.id} product={product} />)
+            )}
           </div>
         </div>
       </section>

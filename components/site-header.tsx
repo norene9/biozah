@@ -36,21 +36,8 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
             <Link className={pathname === "/admin" ? "active" : ""} href="/admin">
               Dashboard
             </Link>
-            <Link
-              className={
-                pathname.startsWith("/admin/products") || pathname.startsWith("/admin/categories")
-                  ? "active"
-                  : ""
-              }
-              href="/admin/products"
-            >
-              Products &amp; Collections
-            </Link>
-            <Link
-              className={pathname.startsWith("/admin/orders") ? "active" : ""}
-              href="/admin/orders"
-            >
-              Orders
+            <Link className={pathname === "/admin/settings" ? "active" : ""} href="/admin/settings">
+              Settings
             </Link>
           </nav>
           <button className="admin-sidebar-signout" type="button" onClick={() => void logout()}>
@@ -73,8 +60,7 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
           {mobileOpen && (
             <nav className="admin-mobile-nav">
               <Link href="/admin">Dashboard</Link>
-              <Link href="/admin/products">Products &amp; Collections</Link>
-              <Link href="/admin/orders">Orders</Link>
+              <Link href="/admin/settings">Settings</Link>
               <button type="button" onClick={() => void logout()}>
                 Sign out
               </button>

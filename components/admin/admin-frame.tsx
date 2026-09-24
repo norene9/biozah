@@ -40,7 +40,6 @@ export function AdminFrame({
     { label: 'Dashboard', href: '/admin', icon: GridIcon },
     { label: 'Products', href: '/admin/products', icon: ProductsIcon },
     { label: 'Categories', href: '/admin/categories', icon: CategoriesIcon },
-    { label: 'Orders', href: '/admin/orders', icon: OrdersIcon },
     { label: 'Settings', href: '/admin/settings', icon: SettingsIcon },
   ];
 

@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState,useEffect } from "react";
+import { Fragment } from "react";
+import { ProductEditor } from "@/app/admin/products/product-editor";
+import { useMemo, useState, useEffect } from "react";
 import type { Category, Product, StoredOrder } from "@/types/store";
 import { SafeThumb } from "./safe-thumb";
 import { CategoryForm } from "@/app/admin/categories/category-form";
 import { ProductCreateForm } from "@/app/admin/products/product-create-form";
 import { useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { CategoryEditor } from "@/app/admin/categories/category-editor";
+import { OrderDetailModal } from "@/components/admin/orders-detail-modal";
+
 const LOW_STOCK = 5;
 
 // status is a free-form string in Firestore ("Pending", "Shipped", ...), not a fixed union,
@@ -67,11 +70,12 @@ export function ManagementConsole({
   initialOrders: StoredOrder[];
 }) {
   const router = useRouter();
-  const [products,setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState(initialProducts);
   useEffect(() => setProducts(initialProducts), [initialProducts]);
   const [categories, setCategories] = useState(initialCategories);
   useEffect(() => setCategories(initialCategories), [initialCategories]);
-  const [orders] = useState(initialOrders);
+  const [orders, setOrders] = useState(initialOrders);
+  useEffect(() => setOrders(initialOrders), [initialOrders]);
 
   const [productQuery, setProductQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -79,7 +83,9 @@ export function ManagementConsole({
   const [statusFilter, setStatusFilter] = useState("all");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [viewingOrder, setViewingOrder] = useState<StoredOrder | null>(null);
+
   const categoryName = useMemo(() => {
     const map = new Map(categories.map((c) => [c.id, c.name]));
     return (id: string) => map.get(id) ?? "Uncategorized";
@@ -153,8 +159,8 @@ export function ManagementConsole({
           <h1>Store overview.</h1>
           <p>Products, collections and orders in one place.</p>
         </div>
-        <Link href="/admin/settings" className="ad-link-btn">
-          Store settings →
+        <Link href="/" className="ad-link-btn">
+          Store overview →
         </Link>
       </section>
 
@@ -212,15 +218,10 @@ export function ManagementConsole({
         ) : (
           <div className="ad-cat-grid">
             {categories.map((category) => (
-              <div
+              <Link
                 key={category.id}
-                role="button"
-                tabIndex={0}
+                href={`/admin/categories/${category.id}/edit`}
                 className="ad-cat-tile"
-                onClick={() => setEditingCategory(category)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") setEditingCategory(category);
-                }}
               >
                 <SafeThumb src={category.image_url} name={category.name} size={44} radius={12} />
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -236,6 +237,7 @@ export function ManagementConsole({
                   aria-label={`Delete ${category.name}`}
                   title="Delete collection"
                   onClick={(event) => {
+                    event.preventDefault();
                     event.stopPropagation();
                     setPendingDeleteCategory(category);
                   }}
@@ -254,7 +256,7 @@ export function ManagementConsole({
                     <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
                   </svg>
                 </button>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -291,6 +293,7 @@ export function ManagementConsole({
           </div>
           {showProductForm && (
             <ProductCreateForm
+              categories={categories}
               onClose={() => setShowProductForm(false)}
               onCreated={() => {
                 setShowProductForm(false);
@@ -319,35 +322,60 @@ export function ManagementConsole({
               <tbody>
                 {filteredProducts.map((product) => {
                   const badge = stockPill(product.stock);
+                  const isEditing = editingProductId === product.id;
                   return (
-                    <tr key={product.id}>
-                      <td>
-                        <div className="ad-cell-main">
-                          <Thumb src={product.image_url} name={product.name} />
-                          <div style={{ minWidth: 0 }}>
-                            <p>{product.name}</p>
-                            <p>/{product.slug}</p>
+                    <Fragment key={product.id}>
+                      <tr>
+                        <td>
+                          <div className="ad-cell-main">
+                            <Thumb src={product.image_url} name={product.name} />
+                            <div style={{ minWidth: 0 }}>
+                              <p>{product.name}</p>
+                              <p>/{product.slug}</p>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>{categoryName(product.category_id)}</td>
-                      <td>{money(product.price, product.currency)}</td>
-                      <td>
-                        <span className={`ad-pill ${badge.tone}`}>{badge.label}</span>
-                      </td>
-                      <td>
-                        <span
-                          className={`ad-pill ${product.active ? "ad-pill--ok" : "ad-pill--muted"}`}
-                        >
-                          {product.active ? "Active" : "Hidden"}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        <Link href={`/admin/products/${product.id}/edit`} className="ad-link-btn">
-                          Edit
-                        </Link>
-                      </td>
-                    </tr>
+                        </td>
+                        <td>{categoryName(product.category_id)}</td>
+                        <td>{money(product.price, product.currency)}</td>
+                        <td>
+                          <span className={`ad-pill ${badge.tone}`}>{badge.label}</span>
+                        </td>
+                        <td>
+                          <span
+                            className={`ad-pill ${product.active ? "ad-pill--ok" : "ad-pill--muted"}`}
+                          >
+                            {product.active ? "Active" : "Hidden"}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <button
+                            type="button"
+                            className="ad-link-btn"
+                            onClick={() => setEditingProductId(isEditing ? null : product.id)}
+                          >
+                            {isEditing ? "Close" : "Edit"}
+                          </button>
+                        </td>
+                      </tr>
+                      {isEditing && (
+                        <tr className="ad-table-expand">
+                          <td colSpan={6}>
+                            <ProductEditor
+                              product={product}
+                              categories={categories}
+                              onClose={() => setEditingProductId(null)}
+                              onSaved={(updated) => {
+                                setProducts((current) =>
+                                  current.map((item) => (item.id === updated.id ? updated : item)),
+                                );
+                                setEditingProductId(null);
+                                router.refresh(); // background sync only — the row above already shows the real edit
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -415,16 +443,36 @@ export function ManagementConsole({
                         </div>
                       </div>
                     </td>
-                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                    <td>{new Date(order.created_at).toLocaleDateString("en-US")}</td>
                     <td>{money(order.total)}</td>
                     <td>
                       <span className={`ad-pill ${statusTone(order.status)}`}>{order.status}</span>
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <Link href={`/admin/orders/${order.order_id}`} className="ad-link-btn">
+                      <button
+                        type="button"
+                        className="ad-link-btn"
+                        onClick={() => setViewingOrder(order)}
+                      >
                         View
-                      </Link>
+                      </button>
                     </td>
+                    {viewingOrder && (
+                      <OrderDetailModal
+                        order={viewingOrder}
+                        onClose={() => setViewingOrder(null)}
+                        onUpdated={(updated) => {
+                          setOrders((current) =>
+                            current.map((o) => (o.order_id === updated.order_id ? updated : o)),
+                          );
+                          setViewingOrder(updated);
+                        }}
+                        onDeleted={(orderId) => {
+                          setOrders((current) => current.filter((o) => o.order_id !== orderId));
+                          setViewingOrder(null);
+                        }}
+                      />
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -432,28 +480,7 @@ export function ManagementConsole({
           </div>
         )}
       </section>
-      {editingCategory && (
-        <div className="ad-modal-overlay" onClick={() => setEditingCategory(null)}>
-          <div className="ad-modal" onClick={(event) => event.stopPropagation()}>
-            <button
-              type="button"
-              className="ad-icon-btn"
-              aria-label="Close"
-              onClick={() => setEditingCategory(null)}
-              style={{ position: "absolute", top: 12, right: 12 }}
-            >
-              ✕
-            </button>
-            <CategoryEditor
-              category={editingCategory}
-              onSaved={() => {
-                setEditingCategory(null);
-                router.refresh();
-              }}
-            />
-          </div>
-        </div>
-      )}
+
       <ConfirmModal
         open={Boolean(pendingDeleteCategory)}
         title="Delete collection?"
@@ -471,4 +498,3 @@ export function ManagementConsole({
     </>
   );
 }
-

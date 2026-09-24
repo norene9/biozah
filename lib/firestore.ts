@@ -172,17 +172,51 @@ export async function updateFirestoreOrderStatus(id: string, status: string) {
     .doc(id)
     .set({ status, updated_at: FieldValue.serverTimestamp() }, { merge: true });
 }
+export async function updateFirestoreOrder(id: string, updates: Partial<Omit<StoredOrder, "order_id" | "created_at" | "items">>) {
+  await db().collection("orders").doc(id).set({ ...updates, updated_at: FieldValue.serverTimestamp() }, { merge: true });
+}
+export async function deleteFirestoreOrder(id: string) {
+  await db().collection("orders").doc(id).delete();
+}
 export async function getFirestoreStoreSettings() {
-  const snap = await db().doc(STORE_SETTINGS_DOC).get(); // TODO: `db` = whatever your category functions call it
-  if (!snap.exists) return { contactEmail: "", contactPhone: "", bio: "" };
+  const snap = await db().doc(STORE_SETTINGS_DOC).get();
+  if (!snap.exists) {
+    return {
+      businessName: "",
+      tagline: "",
+      address: "",
+      contactEmail: "",
+      contactPhone: "",
+      instagramUrl: "",
+      facebookUrl: "",
+      tiktokUrl: "",
+      copyrightText: "",
+    };
+  }
   const data = snap.data() ?? {};
   return {
-    contactEmail: data.contactEmail ?? "",
-    contactPhone: data.contactPhone ?? "",
-    bio: data.bio ?? "",
+    businessName: String(data.businessName ?? ""),
+    tagline: String(data.tagline ?? ""),
+    address: String(data.address ?? ""),
+    contactEmail: String(data.contactEmail ?? ""),
+    contactPhone: String(data.contactPhone ?? ""),
+    instagramUrl: String(data.instagramUrl ?? ""),
+    facebookUrl: String(data.facebookUrl ?? ""),
+    tiktokUrl: String(data.tiktokUrl ?? ""),
+    copyrightText: String(data.copyrightText ?? ""),
   };
 }
 
-export async function updateFirestoreStoreSettings(settings: { contactEmail: string; contactPhone: string; bio: string }) {
-  await db().doc(STORE_SETTINGS_DOC).set({ ...settings, updated_at: FieldValue.serverTimestamp()}, { merge: true });
+export async function updateFirestoreStoreSettings(settings: {
+  businessName: string;
+  tagline: string;
+  address: string;
+  contactEmail: string;
+  contactPhone: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  tiktokUrl: string;
+  copyrightText: string;
+}) {
+  await db().doc(STORE_SETTINGS_DOC).set({ ...settings, updated_at: FieldValue.serverTimestamp() }, { merge: true });
 }
