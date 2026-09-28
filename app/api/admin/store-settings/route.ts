@@ -1,21 +1,35 @@
+// Save as: app/api/admin/store-settings/route.ts
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/firebase/server";
-import { getAuth } from "firebase-admin/auth";
-// TODO: import whatever initializes your Admin SDK app elsewhere (e.g. the same one
-// getCurrentAdmin uses internally in lib/firebase/server.ts) instead of calling getAuth()
-// bare here — it needs an initialized App passed in, or a default app already initialized.
+import { getFirestoreStoreSettings, updateFirestoreStoreSettings } from "@/lib/firestore";
+import type { StoreSettings } from "@/types/store";
 
-export async function PATCH(request: Request) {
-  const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  const body = await request.json() as { email?: string; currentPassword?: string; newPassword?: string };
-  const email = body.email?.trim();
-  if (body.newPassword && !body.currentPassword) return NextResponse.json({ error: "Current password is required to set a new one." }, { status: 400 });
-  if (body.newPassword && body.newPassword.length < 8) return NextResponse.json({ error: "New password must be at least 8 characters." }, { status: 400 });
-  const updates: { email?: string; password?: string } = {};
-  if (email && email !== admin.email) updates.email = email;
-  if (body.newPassword) updates.password = body.newPassword;
-  if (Object.keys(updates).length === 0) return NextResponse.json({ ok: true });
-  try { await getAuth().updateUser(admin.uid, updates); return NextResponse.json({ ok: true }); } catch (error) { const code = (error as { code?: string })?.code; return NextResponse.json({ error: code === "auth/email-already-exists" ? "That email is already in use." : "Unable to update account." }, { status: 400 }); }
+export async function GET() {
+  if (!(await getCurrentAdmin())) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  try {
+    return NextResponse.json(await getFirestoreStoreSettings());
+  } catch {
+    return NextResponse.json({ error: "Unable to load store settings." }, { status: 502 });
+  }
 }
 
+export async function PATCH(request: Request) {
+  if (!(await getCurrentAdmin())) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  const body = (await request.json()) as Partial<StoreSettings>;
+  try {
+    await updateFirestoreStoreSettings({
+      businessName: body.businessName?.trim() ?? "",
+      tagline: body.tagline?.trim() ?? "",
+      address: body.address?.trim() ?? "",
+      contactEmail: body.contactEmail?.trim() ?? "",
+      contactPhone: body.contactPhone?.trim() ?? "",
+      instagramUrl: body.instagramUrl?.trim() ?? "",
+      facebookUrl: body.facebookUrl?.trim() ?? "",
+      tiktokUrl: body.tiktokUrl?.trim() ?? "",
+      copyrightText: body.copyrightText?.trim() ?? "",
+    });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Unable to save store settings." }, { status: 502 });
+  }
+}

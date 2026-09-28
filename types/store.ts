@@ -21,6 +21,7 @@ export type Product = {
   stock: number;
   active: boolean;
   featured: boolean;
+  discount_percent?: number;
 };
 
 export type CartItem = { product: Product; quantity: number };
@@ -37,6 +38,7 @@ export type StoredOrder = {
   delivery_method: string;
   payment_method: string;
   subtotal: number;
+  unit_price: number;
   delivery_cost: number;
   total: number;
   status: string;
@@ -55,4 +57,24 @@ export type OrderInput = {
   delivery_method: string;
   payment_method: string;
   items: { product_id: string; quantity: number }[];
+};
+export type DeliveryZone = {
+  id: string;
+  wilayaCode: string;
+  wilayaName: string;
+  homeDeliveryPrice: number;
+  deskDeliveryPrice: number;
+  active: boolean;
+};
+// Add to types/store.ts, alongside Product/Category/StoredOrder.
+export type StoreSettings = {
+  businessName: string;
+  tagline: string;
+  address: string;
+  contactEmail: string;
+  contactPhone: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  tiktokUrl: string;
+  copyrightText: string;
 };

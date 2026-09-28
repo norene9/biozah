@@ -1,25 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
-type FooterSettings = {
-  businessName: string;
-  tagline: string;
-  address: string;
-  contactEmail: string;
-  contactPhone: string;
-  instagramUrl: string;
-  facebookUrl: string;
-  tiktokUrl: string;
-  copyrightText: string;
-};
+import type { StoreSettings } from "@/types/store";
 
 export function SettingsForm({
   adminEmail,
   footerSettings,
 }: {
   adminEmail: string;
-  footerSettings: FooterSettings;
+  footerSettings: StoreSettings;
 }) {
   // Account fields (email + password)
   const [email, setEmail] = useState(adminEmail);
@@ -28,12 +17,12 @@ export function SettingsForm({
   const [accountStatus, setAccountStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [accountError, setAccountError] = useState("");
 
-  // Footer fields
-  const [footer, setFooter] = useState(footerSettings);
+  // Footer / About Us fields
+  const [footer, setFooter] = useState<StoreSettings>(footerSettings);
   const [footerStatus, setFooterStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [footerError, setFooterError] = useState("");
 
-  function setField(key: keyof FooterSettings, value: string) {
+  function setField(key: keyof StoreSettings, value: string) {
     setFooter((current) => ({ ...current, [key]: value }));
   }
 
@@ -112,10 +101,7 @@ export function SettingsForm({
       </form>
 
       <form className="ad-card" onSubmit={saveFooter} style={{ padding: 20 }}>
-        <h2 style={{ marginTop: 0 }}>Site footer</h2>
-        <p style={{ color: "var(--ad-muted)", fontSize: "0.85rem", marginTop: 4 }}>
-          Shown at the bottom of every storefront page.
-        </p>
+        <h2 style={{ marginTop: 0 }}>About Us</h2>
 
         <label style={{ display: "block", marginTop: 16, fontSize: "0.82rem", fontWeight: 600 }}>
           Business name

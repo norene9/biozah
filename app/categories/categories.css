@@ -1,0 +1,134 @@
+.categories-page {
+  width: 100%;
+}
+
+/* Contains everything so it can never touch the viewport edge */
+.page-intro,
+.catalog {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+}
+
+.page-intro {
+  padding-top: clamp(28px, 5vw, 48px);
+  padding-bottom: clamp(24px, 4vw, 32px);
+}
+
+.page-intro .eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #55645f;
+}
+
+.page-intro h1 {
+  margin: 6px 0 0;
+  font-size: clamp(2.25rem, 6vw, 4.25rem);
+  line-height: 1.05;
+  color: #1a3d36;
+  text-wrap: balance;
+}
+
+.page-intro > p:last-child {
+  max-width: 60ch;
+  margin: 14px 0 0;
+  color: #55645f;
+  font-size: 1rem;
+}
+
+.catalog {
+  padding-bottom: clamp(40px, 6vw, 72px);
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.category-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #e3ece7;
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-tile-img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.category-tile-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 4rem;
+  color: rgba(26, 61, 54, 0.35);
+}
+
+.category-tile-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
+  color: #fff;
+}
+
+.category-tile-overlay h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  text-transform: capitalize;
+}
+
+.category-tile-overlay p {
+  max-width: 34ch;
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.catalog-empty {
+  padding: 40px 0;
+  color: #55645f;
+  text-align: center;
+}
+
+.category-tile:focus-visible {
+  outline: 2px solid #1a3d36;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .category-tile:hover .category-tile-img {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-tile-img { transition: none; }
+}

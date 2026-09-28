@@ -5,8 +5,10 @@ import {
   getFirestoreProductBySlug,
   getFirestoreProducts,
   getFirestoreProductsByCategory,
+  getFirestoreStoreSettings,
 } from "@/lib/firestore";
-import type { Category, Product } from "@/types/store";
+
+import type { Category, Product, StoreSettings } from "@/types/store";
 
 const readCategories = async (): Promise<Category[]> => getFirestoreCategories();
 const readProducts = async (): Promise<Product[]> => getFirestoreProducts();
@@ -35,4 +37,7 @@ export function pickRandom<T>(items: T[], count: number): T[] {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy.slice(0, count);
+}
+export async function getStoreSettings(): Promise<StoreSettings> {
+  return getFirestoreStoreSettings();
 }

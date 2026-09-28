@@ -9,11 +9,12 @@ const PRICE_MAX = 10000;
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; max?: string; sort?: string }>;
+   searchParams: Promise<{ category?: string; max?: string; sort?: string; search?: string }>
 }) {
+  
   const params = await searchParams;
   const [categoryList, allProducts] = await Promise.all([getCategories(), getProducts()]);
-
+  const search = params.search?.trim().toLowerCase() ?? "";
   const activeCategory = params.category ?? "all";
   const maxPrice = params.max ? Number(params.max) : PRICE_MAX;
   const sort = params.sort ?? "featured";
@@ -26,7 +27,9 @@ export default async function ProductsPage({
   if (!Number.isNaN(maxPrice) && maxPrice < PRICE_MAX) {
     products = products.filter((product) => product.price <= maxPrice);
   }
-
+   if (search) {
+     products = products.filter((product) => product.name.toLowerCase().includes(search));
+   }
   products = [...products].sort((a, b) => {
     if (sort === "price-low") return a.price - b.price;
     if (sort === "price-high") return b.price - a.price;
@@ -62,6 +65,7 @@ export default async function ProductsPage({
           <p className="catalog-count">
             Showing <strong>{products.length}</strong> product{products.length === 1 ? "" : "s"}
           </p>
+          {search && <p className="catalog-search-note">Results for "{params.search}"</p>}
           <SortSelect value={sort} />
         </div>
 
@@ -86,3 +90,4 @@ export default async function ProductsPage({
     </main>
   );
 }
+

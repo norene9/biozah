@@ -1,0 +1,43 @@
+/* Show on mobile */
+.mobile-filter-btn {
+    width: "100%";
+    padding: "10px 16px";
+    marginBottom: "16px";
+    justifyContent: "space-between";
+    alignItems: "center";
+    backgroundColor: "#f7f7f7";
+    border: "1px solid #e2e8f0";
+    borderRadius: "8px";
+    fontWeight: 600;
+    cursor: "pointer";
+}
+
+/* Hide on tablet and desktop screens */
+@media (min-width: 768px) {
+  .mobile-filter-btn {
+    display: none !important;
+  }
+}
+/* TO THIS: */
+@media (max-width: 768px) {
+  .catalog-sidebar {
+    display: none;
+  }
+  
+  .catalog-sidebar.is-open {
+    display: block !important;
+  }
+  
+  .mobile-filter-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-filter-btn {
+    display: none !important;
+  }
+  .catalog-sidebar {
+    display: block !important;
+  }
+}

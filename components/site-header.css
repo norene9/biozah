@@ -239,3 +239,71 @@
     display: flex;
   }
 }
+.search-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(26, 61, 54, 0.15);
+  border-radius: 999px;
+  background: transparent;
+  color: #1a3d36;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgba(26, 61, 54, 0.25);
+  border-radius: 999px;
+  background: #fff;
+  color: #1a3d36;
+}
+
+.search-form input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.search-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: #55645f;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.cart-link.user-bag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-icon {
+  display: inline-flex;
+}
+
+@media (max-width: 480px) {
+  .search-form {
+    width: 160px;
+  }
+  .search-button span {
+    display: none; /* icon-only on very small screens, still 40px tall for a real tap target */
+  }
+}

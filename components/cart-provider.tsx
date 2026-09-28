@@ -8,6 +8,7 @@ type CartContextValue = {
   add: (product: Product, quantity?: number) => void;
   remove: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
+  clear: () => void;              // ← add this
   count: number;
   subtotal: number;
 };
@@ -18,7 +19,7 @@ const STORAGE_KEY = "biozah-cart";
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
-
+ const clear = () => setItems([]);
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -68,6 +69,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         add,
         remove,
         setQuantity,
+        clear,
         count: items.reduce((sum, item) => sum + item.quantity, 0),
         subtotal: items.reduce((sum, item) => sum + item.quantity * item.product.price, 0),
       }}

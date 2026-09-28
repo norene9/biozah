@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Category, Product } from "@/types/store";
+import { finalPrice } from "@/lib/pricing";
 
 type UploadedImage = { url: string; publicId: string };
 
@@ -17,8 +18,10 @@ export function ProductEditor({
   onSaved: (updated: Product) => void;
 }) {
   const [name, setName] = useState(product.name);
+  const [description, setDescription] = useState(product.description ?? "");
   const [categoryId, setCategoryId] = useState(product.category_id);
   const [price, setPrice] = useState(String(product.price));
+  const [discount, setDiscount] = useState(String(product.discount_percent ?? 0));
   const [stock, setStock] = useState(String(product.stock));
   const [active, setActive] = useState(product.active);
   const [featured, setFeatured] = useState(product.featured);
@@ -67,8 +70,10 @@ export function ProductEditor({
     setMessage("");
     const updates = {
       name,
+      description,
       category_id: categoryId,
       price: Number(price),
+      discount_percent: Math.min(Math.max(Math.round(Number(discount) || 0), 0), 99),
       stock: Number(stock),
       active,
       featured,
@@ -122,6 +127,11 @@ export function ProductEditor({
         </label>
 
         <label>
+          Description
+          <textarea rows={3} value={description} onChange={(event) => setDescription(event.target.value)} />
+        </label>
+
+        <label>
           Collection
           <select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
             {categories.map((category) => (
@@ -140,6 +150,28 @@ export function ProductEditor({
           <label>
             Stock
             <input type="number" min="0" value={stock} onChange={(event) => setStock(event.target.value)} />
+          </label>
+        </div>
+
+        <div className="form-row">
+          <label>
+            Discount (%)
+            <input
+              type="number"
+              min="0"
+              max="99"
+              step="1"
+              value={discount}
+              onChange={(event) => setDiscount(event.target.value)}
+            />
+          </label>
+          <label>
+            Customer pays
+            <input
+              readOnly
+              tabIndex={-1}
+              value={`${finalPrice({ price: Number(price) || 0, discount_percent: Number(discount) || 0 }).toLocaleString("en-US")} ${product.currency}`}
+            />
           </label>
         </div>
 
@@ -168,3 +200,4 @@ export function ProductEditor({
     </div>
   );
 }
+

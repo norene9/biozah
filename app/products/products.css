@@ -319,3 +319,8 @@
     grid-template-columns: 1fr;
   }
 }
+.catalog-search-note {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #55645f;
+}

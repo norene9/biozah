@@ -43,6 +43,7 @@ function productFrom(id: string, data: FirebaseFirestore.DocumentData): Product 
     stock: Number(data.stock) || 0,
     active: data.active !== false,
     featured: data.featured === true,
+    discount_percent: Math.min(Math.max(Math.round(Number(data.discount_percent) || 0), 0), 99),
   };
 }
 

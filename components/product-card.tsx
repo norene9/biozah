@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Product } from "@/types/store";
 import { getCategoryName } from "@/lib/store";
 import { AddToBagButton } from "./add-to-bag-button";
+import { discountPercent, finalPrice, hasDiscount } from "@/lib/pricing";
 import "./product-card.css";
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -12,18 +13,10 @@ export async function ProductCard({ product }: { product: Product }) {
   const categoryName = await getCategoryName(product.category_id);
   const soldOut = product.stock <= 0;
   const lowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
+  const onSale = hasDiscount(product);
 
   return (
-    
     <article className="pcard">
-        {/* <Link
-        href={`/products/${product.slug}`}
-        className="product-image"
-        style={{ backgroundImage: `url(${product.image_url})` }}
-        aria-label={`View ${product.name}`}
-      >
-        <span>{product.stock === 0 ? "Sold out" : "Shop"}</span>
-      </Link> */}
       <Link href={href} className="pcard-media" aria-label={`View ${product.name}`}>
         {product.image_url ? (
           <Image
@@ -38,6 +31,7 @@ export async function ProductCard({ product }: { product: Product }) {
             {product.name.charAt(0).toUpperCase()}
           </span>
         )}
+        {onSale && !soldOut && <span className="pcard-chip pcard-chip--sale">-{discountPercent(product)}%</span>}
         {soldOut && <span className="pcard-chip">Sold out</span>}
         {lowStock && <span className="pcard-chip pcard-chip--warn">Only {product.stock} left</span>}
       </Link>
@@ -51,7 +45,14 @@ export async function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="pcard-footer">
           <p className="pcard-price">
-            {product.price.toLocaleString("en-US")} {product.currency}
+            {onSale && (
+              <s className="pcard-old-price">
+                {product.price.toLocaleString("en-US")} {product.currency}
+              </s>
+            )}
+            <span>
+              {finalPrice(product).toLocaleString("en-US")} {product.currency}
+            </span>
           </p>
           <AddToBagButton product={product} />
         </div>

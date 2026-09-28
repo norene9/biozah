@@ -1,0 +1,95 @@
+.about-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 64px) clamp(20px, 5vw, 48px) clamp(48px, 8vw, 96px);
+}
+
+.about-hero {
+  text-align: center;
+  padding-bottom: clamp(32px, 5vw, 48px);
+  border-bottom: 1px solid rgba(26, 61, 54, 0.1);
+}
+
+.about-hero .eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #55645f;
+}
+
+.about-hero h1 {
+  margin: 8px 0 0;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  color: #1a3d36;
+}
+
+.about-tagline {
+  max-width: 46ch;
+  margin: 12px auto 0;
+  color: #55645f;
+  font-size: 1.05rem;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  padding-block: clamp(32px, 5vw, 48px);
+}
+
+@media (min-width: 700px) {
+  .about-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.about-block h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  color: #1a3d36;
+}
+
+.about-address {
+  margin: 0;
+  color: #3f4c48;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.about-contact-link {
+  display: block;
+  margin-top: 4px;
+  color: #3f4c48;
+  text-decoration: none;
+}
+
+.about-contact-link:hover {
+  text-decoration: underline;
+}
+
+.about-social {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-social a {
+  color: #3f4c48;
+  text-decoration: none;
+}
+
+.about-social a:hover {
+  text-decoration: underline;
+}
+
+.about-copyright {
+  margin-top: clamp(24px, 4vw, 40px);
+  padding-top: 20px;
+  border-top: 1px solid rgba(26, 61, 54, 0.1);
+  text-align: center;
+  font-size: 0.85rem;
+  color: #55645f;
+}
