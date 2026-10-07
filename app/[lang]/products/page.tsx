@@ -52,11 +52,11 @@ export default async function ProductsPage({
           <p className="eyebrow">{dict.shop.heroEyebrow}</p>
           <h1>{dict.shop.heroTitle}</h1>
           <p className="shop-hero-description">{dict.shop.heroSubtitle}</p>
-          <a href="#catalog" className="shop-circle-link">
+          {/* <a href="#catalog" className="shop-circle-link">
             <span>{dict.shop.heroTitle}</span>
             <span>{dict.shop.allProducts}</span>
             <span className="shop-circle-arrow">↗</span>
-          </a>
+          </a> */}
         </div>
         <div className="shop-hero-art">
           <div className="hero-orb hero-orb-one" />
