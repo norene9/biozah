@@ -22,7 +22,7 @@ export default async function DeliveryZonesPage({ params }: { params: Promise<{ 
           <p>{dict.admin.deliverySub}</p>
         </div>
       </section>
-      <DeliveryZonesTable initialZones={zones} />
+      <DeliveryZonesTable initialZones={zones} dict={dict.forms} />
     </>
   );
 }

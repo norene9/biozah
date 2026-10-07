@@ -24,7 +24,7 @@ export default async function AdminSettingsPage({ params }: { params: Promise<{ 
           <p>{dict.admin.settingsSub}</p>
         </div>
       </section>
-      <SettingsForm adminEmail={admin.email ?? ""} footerSettings={footerSettings} />
+      <SettingsForm adminEmail={admin.email ?? ""} footerSettings={footerSettings} dict={dict.forms} />
     </>
   );
 }
