@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { StoredOrder } from "@/types/store";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
 type Zone = {
   wilayaCode: string;
@@ -10,12 +11,18 @@ type Zone = {
   deskDeliveryPrice: number;
 };
 
-const PAYMENT_METHODS = [
-  { value: "cash", label: "Cash on delivery" },
-  { value: "transfer", label: "Bank transfer" },
-];
+// Dictionary is inferred automatically from dictionaries/en.json's shape, so this type
+// just aliases the "orders" key for convenience — add/edit strings in the JSON files,
+// never here.
+export type OrdersDict = Dictionary["orders"];
 
-const STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"];
+const PAYMENT_METHOD_VALUES = ["cash", "transfer"] as const;
+const STATUS_VALUES = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"] as const;
+
+function statusLabel(dict: OrdersDict, status: string) {
+  const key = status.toLowerCase() as keyof OrdersDict["statusLabels"];
+  return dict.statusLabels[key] ?? status; // unrecognized status (e.g. a legacy value) still shows something
+}
 
 function money(value: number, currency = "DZD") {
   return `${(value || 0).toLocaleString("en-US")} ${currency}`;
@@ -23,11 +30,13 @@ function money(value: number, currency = "DZD") {
 
 export function OrderDetailModal({
   order,
+  dict,
   onClose,
   onUpdated,
   onDeleted,
 }: {
   order: StoredOrder;
+  dict: OrdersDict;
   onClose: () => void;
   onUpdated: (updated: StoredOrder) => void;
   onDeleted: (orderId: string) => void;
@@ -53,29 +62,26 @@ export function OrderDetailModal({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Fetch dynamic delivery zones (same as Checkout)
   useEffect(() => {
     fetch("/api/delivery-zones")
       .then((res) => res.json())
-      .then((data: Zone[]) => {
-        setZones(data);
-      })
-      .catch(() => setMessage("Unable to load delivery pricing zones."))
+      .then((data: Zone[]) => setZones(data))
+      .catch(() => setMessage(dict.zonesLoadError))
       .finally(() => setZonesLoading(false));
+    // dict is stable for the component's lifetime (comes from a server-loaded locale), so it's
+    // intentionally left out of the dependency array to avoid re-fetching zones on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function set(key: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  // Find the zone matching current wilaya name or wilaya code
   const selectedZone = zones.find(
     (zone) =>
-      zone.wilayaName.toLowerCase() === form.wilaya.toLowerCase() ||
-      zone.wilayaCode === form.wilaya
+      zone.wilayaName.toLowerCase() === form.wilaya.toLowerCase() || zone.wilayaCode === form.wilaya,
   );
 
-  // Calculate dynamic delivery price based on selected zone & method
   const deliveryCost = selectedZone
     ? form.delivery_method === "home"
       ? selectedZone.homeDeliveryPrice
@@ -83,7 +89,7 @@ export function OrderDetailModal({
     : order.delivery_cost || 0;
 
   const itemsSubtotal = order.subtotal || 0;
-  const calculatedTotal = itemsSubtotal  + deliveryCost;
+  const calculatedTotal = itemsSubtotal + deliveryCost;
 
   async function saveStatus() {
     setSavingStatus(true);
@@ -94,7 +100,7 @@ export function OrderDetailModal({
       body: JSON.stringify({ orderId: order.order_id, status }),
     });
     if (response.ok) onUpdated({ ...order, status });
-    else setMessage((await response.json().catch(() => null))?.error ?? "Unable to update status.");
+    else setMessage((await response.json().catch(() => null))?.error ?? dict.statusUpdateError);
     setSavingStatus(false);
   }
 
@@ -119,7 +125,7 @@ export function OrderDetailModal({
     if (response.ok) {
       onUpdated({ ...order, ...updatedPayload, status });
     } else {
-      setMessage((await response.json().catch(() => null))?.error ?? "Unable to update order.");
+      setMessage((await response.json().catch(() => null))?.error ?? dict.infoUpdateError);
     }
     setSavingInfo(false);
   }
@@ -133,21 +139,24 @@ export function OrderDetailModal({
     });
     if (response.ok) onDeleted(order.order_id);
     else {
-      setMessage((await response.json().catch(() => null))?.error ?? "Unable to delete order.");
+      setMessage((await response.json().catch(() => null))?.error ?? dict.deleteError);
       setDeleting(false);
       setConfirmDelete(false);
     }
   }
-
+function statusLabel(dict: OrdersDict, status: string) {
+  const key = status.toLowerCase() as keyof OrdersDict["statusLabels"];
+  return dict?.statusLabels?.[key] ?? status; // falls back to the raw status if dict is incomplete
+}
   return (
     <div className="ad-modal-overlay" onClick={onClose}>
       <div className="ad-modal ad-modal--order" onClick={(event) => event.stopPropagation()}>
         <div className="order-modal-head">
           <div>
             <span className="order-modal-id">{order.order_id}</span>
-            <span className={`ad-pill order-modal-status-pill`}>{order.status}</span>
+            <span className="ad-pill order-modal-status-pill">{statusLabel(dict, order.status)}</span>
           </div>
-          <button type="button" className="ad-icon-btn" aria-label="Close" onClick={onClose}>
+          <button type="button" className="ad-icon-btn" aria-label={dict.close} onClick={onClose}>
             ✕
           </button>
         </div>
@@ -155,42 +164,42 @@ export function OrderDetailModal({
         <div className="order-modal-scroll">
           <section className="order-modal-status">
             <div>
-              <p className="order-modal-label">Change order status</p>
-              <p className="order-modal-hint">Updating will save to backend &amp; trigger email alerts.</p>
+              <p className="order-modal-label">{dict.changeStatus}</p>
+              <p className="order-modal-hint">{dict.changeStatusHint}</p>
             </div>
             <div className="order-modal-status-controls">
               <select className="ad-select" value={status} onChange={(event) => setStatus(event.target.value)}>
-                {STATUSES.map((s) => (
+                {STATUS_VALUES.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {statusLabel(dict, s)}
                   </option>
                 ))}
               </select>
               <button type="button" className="ad-btn" disabled={savingStatus} onClick={() => void saveStatus()}>
-                {savingStatus ? "Saving…" : "Save Status"}
+                {savingStatus ? dict.saving : dict.saveStatus}
               </button>
             </div>
           </section>
 
-          <h3 className="order-modal-section-title">01. Customer &amp; Shipping Details</h3>
+          <h3 className="order-modal-section-title">01. {dict.customerShippingTitle}</h3>
 
           <label>
-            Full Name
+            {dict.fullName}
             <input value={form.customer_name} onChange={(e) => set("customer_name", e.target.value)} />
           </label>
           <div className="form-row">
             <label>
-              Email Address
+              {dict.emailAddress}
               <input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
             </label>
             <label>
-              Phone Number
+              {dict.phoneNumber}
               <input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
             </label>
           </div>
           <div className="form-row">
             <label>
-              Wilaya
+              {dict.wilaya}
               <select
                 value={selectedZone ? selectedZone.wilayaCode : form.wilaya}
                 onChange={(e) => {
@@ -199,7 +208,7 @@ export function OrderDetailModal({
                 }}
                 disabled={zonesLoading}
               >
-                {zonesLoading && <option value="">Loading wilayas…</option>}
+                {zonesLoading && <option value="">{dict.loadingWilayas}</option>}
                 {!zonesLoading &&
                   zones.map((zone) => (
                     <option key={zone.wilayaCode} value={zone.wilayaCode}>
@@ -209,37 +218,37 @@ export function OrderDetailModal({
               </select>
             </label>
             <label>
-              Commune
+              {dict.commune}
               <input value={form.commune} onChange={(e) => set("commune", e.target.value)} />
             </label>
           </div>
           <label>
-            Full Delivery Address
+            {dict.fullAddress}
             <textarea rows={2} value={form.address} onChange={(e) => set("address", e.target.value)} />
           </label>
           <div className="form-row">
             <label>
-              Delivery Method
+              {dict.deliveryMethod}
               <select
                 value={form.delivery_method}
                 onChange={(e) => set("delivery_method", e.target.value as "home" | "pickup")}
               >
                 <option value="home">
-                  Home delivery
+                  {dict.homeDelivery}
                   {selectedZone ? ` · ${selectedZone.homeDeliveryPrice.toLocaleString()} DZD` : ""}
                 </option>
                 <option value="pickup">
-                  Stop desk / pickup
+                  {dict.stopDeskPickup}
                   {selectedZone ? ` · ${selectedZone.deskDeliveryPrice.toLocaleString()} DZD` : ""}
                 </option>
               </select>
             </label>
             <label>
-              Payment Method
+              {dict.paymentMethod}
               <select value={form.payment_method} onChange={(e) => set("payment_method", e.target.value)}>
-                {PAYMENT_METHODS.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
+                {PAYMENT_METHOD_VALUES.map((value) => (
+                  <option key={value} value={value}>
+                    {value === "cash" ? dict.cashOnDelivery : dict.bankTransfer}
                   </option>
                 ))}
               </select>
@@ -250,18 +259,18 @@ export function OrderDetailModal({
 
           <div className="order-modal-actions">
             <button type="button" className="ad-btn" disabled={savingInfo} onClick={() => void saveInfo()}>
-              {savingInfo ? "Saving…" : "Update Order Info"}
+              {savingInfo ? dict.saving : dict.updateOrderInfo}
             </button>
           </div>
 
           <section className="order-modal-summary">
             <div className="order-modal-summary-head">
-              <p className="order-modal-label">Your selection</p>
+              <p className="order-modal-label">{dict.yourSelection}</p>
               <p className="order-modal-hint">
                 {order.created_at ? new Date(order.created_at).toLocaleString("en-US") : ""}
               </p>
             </div>
-            <h3 style={{ marginTop: 6 }}>Order summary</h3>
+            <h3 style={{ marginTop: 6 }}>{dict.orderSummary}</h3>
             <ul className="order-modal-items">
               {order?.items?.map((item, i) => (
                 <li key={i}>
@@ -277,21 +286,15 @@ export function OrderDetailModal({
             </ul>
             <div className="order-modal-totals">
               <div>
-                <span>Items Subtotal</span>
+                <span>{dict.itemsSubtotal}</span>
                 <span>{money(itemsSubtotal)}</span>
               </div>
-              {/* {discountAmount > 0 && (
-                <div style={{ color: "#2e6041" }}>
-                  <span>Discount Savings</span>
-                  <span>- {money(discountAmount)}</span>
-                </div>
-              )} */}
               <div>
-                <span>Delivery Fee</span>
+                <span>{dict.deliveryFee}</span>
                 <span>{money(deliveryCost)}</span>
               </div>
               <div className="order-modal-total-line">
-                <strong>Total</strong>
+                <strong>{dict.total}</strong>
                 <strong>{money(calculatedTotal)}</strong>
               </div>
             </div>
@@ -305,21 +308,21 @@ export function OrderDetailModal({
             onClick={() => setConfirmDelete(true)}
             disabled={deleting}
           >
-            🗑 Delete Order
+            🗑 {dict.deleteOrder}
           </button>
           <button type="button" className="button sheet-reset" onClick={onClose}>
-            Close
+            {dict.close}
           </button>
         </div>
 
         {confirmDelete && (
           <div className="ad-modal-overlay" style={{ zIndex: 60 }} onClick={() => setConfirmDelete(false)}>
             <div className="ad-modal" style={{ maxWidth: 360 }} onClick={(e) => e.stopPropagation()}>
-              <p style={{ fontWeight: 600, marginTop: 0 }}>Delete this order?</p>
-              <p className="order-modal-hint">This cannot be undone.</p>
+              <p style={{ fontWeight: 600, marginTop: 0 }}>{dict.deleteConfirmTitle}</p>
+              <p className="order-modal-hint">{dict.deleteConfirmHint}</p>
               <div className="order-modal-actions" style={{ justifyContent: "flex-end", gap: 8 }}>
                 <button type="button" className="button sheet-reset" onClick={() => setConfirmDelete(false)}>
-                  Cancel
+                  {dict.cancel}
                 </button>
                 <button
                   type="button"
@@ -327,7 +330,7 @@ export function OrderDetailModal({
                   disabled={deleting}
                   onClick={() => void remove()}
                 >
-                  {deleting ? "Deleting…" : "Delete"}
+                  {deleting ? dict.deleting : dict.delete}
                 </button>
               </div>
             </div>

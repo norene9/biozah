@@ -208,7 +208,7 @@ export async function getFirestoreStoreSettings() {
   };
 }
 
-export async function updateFirestoreStoreSettings(settings: {
+export async function updateFirestoreStoreSettings(settings: Partial<{
   businessName: string;
   tagline: string;
   address: string;
@@ -218,6 +218,6 @@ export async function updateFirestoreStoreSettings(settings: {
   facebookUrl: string;
   tiktokUrl: string;
   copyrightText: string;
-}) {
+}>) {
   await db().doc(STORE_SETTINGS_DOC).set({ ...settings, updated_at: FieldValue.serverTimestamp() }, { merge: true });
 }

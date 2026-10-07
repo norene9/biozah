@@ -1,0 +1,324 @@
+.home {
+  --home-ink: #1a3d36;
+  --home-cream: #f6f3ec;
+  --home-muted: #55645f;
+  --home-gutter: clamp(20px, 5vw, 48px);
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+/* Hero: full-bleed, fills the viewport under the header */
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  width: 100%;
+  min-height: clamp(560px, calc(100svh - 68px), 900px);
+  background: var(--home-cream);
+  color: var(--home-ink);
+}
+
+.home-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.home-hero-img {
+  object-fit: cover;
+  object-position: 72% 30%;
+}
+
+/* Mirror the photo in RTL so the empty side faces the headline */
+[dir="rtl"] .home-hero-img {
+  transform: scaleX(-1);
+}
+
+/* Keeps the headline readable over any photo */
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(246, 243, 236, 0.94) 0%,
+    rgba(246, 243, 236, 0.72) 36%,
+    rgba(246, 243, 236, 0) 68%
+  );
+}
+
+/* In RTL the text sits on the right — the gradient must darken from the right */
+[dir="rtl"] .home-hero::before {
+  background: linear-gradient(
+    270deg,
+    rgba(246, 243, 236, 0.94) 0%,
+    rgba(246, 243, 236, 0.72) 36%,
+    rgba(246, 243, 236, 0) 68%
+  );
+}
+
+.home-hero-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(40px, 8vh, 96px) var(--home-gutter) 32px;
+}
+
+.home-hero-copy {
+  max-width: 560px;
+  margin-block: auto;
+}
+
+.home-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.home-hero-copy p {
+  max-width: 44ch;
+  margin: 20px 0 32px;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  color: var(--home-muted);
+}
+
+.home-hero-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 760px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-hero-features li {
+  padding: 12px 16px;
+  border: 1px solid rgba(26, 61, 54, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.home-hero-features strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.home-hero-features span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: var(--home-muted);
+}
+
+/* Sections */
+.home-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vw, 96px) var(--home-gutter);
+}
+
+.home-container--tight {
+  padding-top: 0;
+}
+
+.home-heading {
+  margin-bottom: clamp(24px, 4vw, 40px);
+  text-align: center;
+}
+
+.home-heading h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  text-wrap: balance;
+}
+
+.home-heading p {
+  max-width: 46ch;
+  margin: 12px auto 0;
+  color: var(--home-muted);
+}
+
+.home-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.home-more {
+  margin-top: 32px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .home-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Phones: photo shows through at the bottom, text sits on a top wash */
+@media (max-width: 720px) {
+  .home-hero::before {
+    background: linear-gradient(
+      180deg,
+      rgba(246, 243, 236, 0.94) 0%,
+      rgba(246, 243, 236, 0.78) 50%,
+      rgba(246, 243, 236, 0.15) 100%
+    );
+  }
+
+  .home-hero-img {
+    object-position: 68% center;
+  }
+
+  .home-hero-features span {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-hero-features {
+    display: none;
+  }
+
+  .home-hero-inner {
+    padding-bottom: 48px;
+  }
+}
+.home-cats-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.home-cats-head h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.home-cats-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--home-ink);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.home-cats-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--home-ink);
+  color: #fff;
+}
+
+/* Centered when it fits, swipeable when it doesn't */
+.home-cats {
+  display: flex;
+  gap: clamp(16px, 3vw, 32px);
+  padding-bottom: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.home-cats::-webkit-scrollbar {
+  display: none;
+}
+
+.home-cat:first-child {
+  margin-inline-start: auto;
+}
+
+.home-cat:last-child {
+  margin-inline-end: auto;
+}
+
+.home-cat {
+  flex: none;
+  width: clamp(130px, 17vw, 190px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--home-ink);
+  text-decoration: none;
+  scroll-snap-align: start;
+}
+
+.home-cat-arch {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e3ece7;
+}
+
+.home-cat-img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.home-cat-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 3rem;
+  color: rgba(26, 61, 54, 0.35);
+}
+
+.home-cat-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.home-cats-all:focus-visible,
+.home-cat:focus-visible {
+  outline: 2px solid var(--home-ink);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+@media (hover: hover) {
+  .home-cat:hover .home-cat-img {
+    transform: scale(1.05);
+  }
+  .home-cat:hover .home-cat-name {
+    text-decoration: underline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-cat-img {
+    transition: none;
+  }
+}

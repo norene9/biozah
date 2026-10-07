@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { localePath } from "@/lib/i18n/locale-path";
+import { useLocale } from "@/lib/i18n/use-locale";
 
-export function SearchBar() {
+export function SearchBar({ label, placeholder }: { label: string; placeholder: string }) {
   const router = useRouter();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,18 +20,18 @@ export function SearchBar() {
     event.preventDefault();
     const q = query.trim();
     if (!q) return;
-    router.push(`/products?search=${encodeURIComponent(q)}#catalog`);
+    router.push(`${localePath(locale, "/products")}?search=${encodeURIComponent(q)}#catalog`);
     setOpen(false);
   }
 
   if (!open) {
     return (
-      <button type="button" className="search-button" aria-label="Search" onClick={() => setOpen(true)}>
+      <button type="button" className="search-button" aria-label={label} onClick={() => setOpen(true)}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="11" cy="11" r="6.5" />
           <path d="m16 16 4.5 4.5" />
         </svg>
-        <span>Search</span>
+        <span>{label}</span>
       </button>
     );
   }
@@ -46,8 +49,8 @@ export function SearchBar() {
         onChange={(event) => setQuery(event.target.value)}
         onBlur={() => { if (!query) setOpen(false); }}
         onKeyDown={(event) => { if (event.key === "Escape") setOpen(false); }}
-        placeholder="Search products…"
-        aria-label="Search products"
+        placeholder={placeholder}
+        aria-label={placeholder}
       />
       <button type="button" className="search-close" aria-label="Close search" onClick={() => setOpen(false)}>
         ✕

@@ -1,18 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap");
 @import "tailwindcss";
-@import "./admin-layout.css";
-@import "./admin-collections.css";
-@import "./catalog-reference.css";
-@import "./admin-modal.css";
-@import "./storefront-reference.css";
+@import "./styles/admin-layout.css";
+@import "./styles/admin-collections.css";
+@import "./styles/catalog-reference.css";
+@import "./styles/admin-modal.css";
+@import "./styles/storefront-reference.css";
 
 .admin-sidebar {
   background: #fff;
-  border-right: 1px solid var(--line);
+  border-inline-end: 1px solid var(--line);
   bottom: 0;
   display: flex;
   flex-direction: column;
-  left: 0;
+  inset-inline-start: 0;
   padding: 28px 18px;
   position: fixed;
   top: 0;
@@ -53,12 +53,40 @@
   font-weight: 600;
 }
 
-.admin-sidebar-signout {
+.admin-sidebar-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .admin-sidebar-signout:hover {
   color: var(--ink);
+}
+
+.language-switcher {
+  display: flex;
+  gap: 4px;
+}
+
+.language-option {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+.language-option:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.language-option.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--cream);
 }
 
 .admin-mobile-header {
@@ -66,7 +94,7 @@
 }
 
 .admin-page {
-  margin-left: 240px;
+  margin-inline-start: 240px;
   min-height: 100vh;
 }
 
@@ -130,7 +158,7 @@
   }
 
   .admin-page {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 
   .admin-page .admin-container {
@@ -398,7 +426,7 @@ h3 {
   bottom: 24px;
   font-family: "Playfair Display", serif;
   font-size: 22px;
-  left: 24px;
+  inset-inline-start: 24px;
   padding: 17px 20px;
   position: absolute;
   z-index: 1;

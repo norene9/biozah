@@ -38,14 +38,21 @@ export type StoredOrder = {
   delivery_method: string;
   payment_method: string;
   subtotal: number;
-  unit_price: number;
+  unit_price?: number;
   delivery_cost: number;
   total: number;
   status: string;
   items?: StoredOrderItem[];
 };
 
-export type StoredOrderItem = { order_id: string; product_id: string; product_name: string; quantity: number; unit_price: number; subtotal: number };
+export type StoredOrderItem = {
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+};
 
 export type OrderInput = {
   customer_name: string;

@@ -4,12 +4,23 @@ import type { Product } from "@/types/store";
 import { getCategoryName } from "@/lib/store";
 import { AddToBagButton } from "./add-to-bag-button";
 import { discountPercent, finalPrice, hasDiscount } from "@/lib/pricing";
+import { localePath } from "@/lib/i18n/locale-path";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import "./product-card.css";
 
 const LOW_STOCK_THRESHOLD = 5;
 
-export async function ProductCard({ product }: { product: Product }) {
-  const href = `/products/${product.slug}`;
+export async function ProductCard({
+  product,
+  locale,
+  dict,
+}: {
+  product: Product;
+  locale: Locale;
+  dict: Dictionary["product"];
+}) {
+  const href = localePath(locale, `/products/${product.slug}`);
   const categoryName = await getCategoryName(product.category_id);
   const soldOut = product.stock <= 0;
   const lowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
@@ -32,8 +43,8 @@ export async function ProductCard({ product }: { product: Product }) {
           </span>
         )}
         {onSale && !soldOut && <span className="pcard-chip pcard-chip--sale">-{discountPercent(product)}%</span>}
-        {soldOut && <span className="pcard-chip">Sold out</span>}
-        {lowStock && <span className="pcard-chip pcard-chip--warn">Only {product.stock} left</span>}
+        {soldOut && <span className="pcard-chip">{dict.soldOut}</span>}
+        {lowStock && <span className="pcard-chip pcard-chip--warn">{dict.onlyLeft.replace("{count}", String(product.stock))}</span>}
       </Link>
 
       <div className="pcard-body">
@@ -54,7 +65,7 @@ export async function ProductCard({ product }: { product: Product }) {
               {finalPrice(product).toLocaleString("en-US")} {product.currency}
             </span>
           </p>
-          <AddToBagButton product={product} />
+          <AddToBagButton product={product} dict={dict} />
         </div>
       </div>
     </article>

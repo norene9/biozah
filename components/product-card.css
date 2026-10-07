@@ -226,18 +226,14 @@
   }
 }
 /* ---- Append to product-card.css ---- */
-.pcard-chip--sale {
-  left: auto;
-  right: 8px;
-  background: #8a2a20;
-  color: #fff;
+.pcard-chip {
+  top: 8px;
+  inset-inline-start: 8px;
 }
 
-.pcard-price {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 2px 8px;
+.pcard-chip--sale {
+  inset-inline-start: auto;
+  inset-inline-end: 8px;
 }
 
 .pcard-old-price {

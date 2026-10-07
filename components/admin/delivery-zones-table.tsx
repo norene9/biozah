@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import type { DeliveryZone } from "@/lib/firebase/delivery";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
-export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZone[] }) {
+export function DeliveryZonesTable({ initialZones, dict }: { initialZones: DeliveryZone[]; dict: Dictionary["forms"] }) {
   const [zones, setZones] = useState(initialZones);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
@@ -26,7 +27,7 @@ export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZon
         active: zone.active,
       }),
     });
-    if (!response.ok) setError((await response.json().catch(() => null))?.error ?? "Unable to save.");
+    if (!response.ok) setError((await response.json().catch(() => null))?.error ?? dict.zonesSaveError);
     setSavingId(null);
   }
 
@@ -38,7 +39,7 @@ export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZon
       const refreshed = await fetch("/api/admin/delivery-zones").then((r) => r.json());
       setZones(refreshed);
     } else {
-      setError((await response.json().catch(() => null))?.error ?? "Unable to seed zones.");
+      setError((await response.json().catch(() => null))?.error ?? dict.zonesSeedError);
     }
     setSeeding(false);
   }
@@ -47,12 +48,12 @@ export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZon
     <section className="ad-card">
       <div className="ad-card-head">
         <div>
-          <h2>Delivery zones</h2>
-          <p>Home and stop-desk delivery prices per wilaya</p>
+          <h2>{dict.zonesTitle}</h2>
+          <p>{dict.zonesSub}</p>
         </div>
         {zones.length === 0 && (
           <button type="button" className="ad-btn" disabled={seeding} onClick={() => void seed()}>
-            {seeding ? "Adding all wilayas…" : "Add all 58 wilayas"}
+            {seeding ? dict.addingWilayas : dict.addAllWilayas}
           </button>
         )}
       </div>
@@ -60,16 +61,16 @@ export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZon
       {error && <p className="form-error" style={{ padding: "0 20px" }}>{error}</p>}
 
       {zones.length === 0 ? (
-        <p className="ad-empty">No delivery zones yet. Click "Add all 58 wilayas" to start.</p>
+        <p className="ad-empty">{dict.noZones}</p>
       ) : (
         <div className="ad-table-wrap">
           <table className="ad-table">
             <thead>
               <tr>
-                <th>Wilaya</th>
-                <th>Home delivery (DZD)</th>
-                <th>Stop desk (DZD)</th>
-                <th>Active</th>
+                <th>{dict.wilayaCol}</th>
+                <th>{dict.homeDeliveryCol}</th>
+                <th>{dict.deskCol}</th>
+                <th>{dict.activeCol}</th>
                 <th aria-label="Actions" />
               </tr>
             </thead>
@@ -111,7 +112,7 @@ export function DeliveryZonesTable({ initialZones }: { initialZones: DeliveryZon
                       disabled={savingId === zone.id}
                       onClick={() => void save(zone)}
                     >
-                      {savingId === zone.id ? "Saving…" : "Save"}
+                      {savingId === zone.id ? dict.saving : dict.save}
                     </button>
                   </td>
                 </tr>

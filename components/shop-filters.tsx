@@ -3,14 +3,17 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Category } from "@/types/store";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import "./ShopFilters.module.css";
 export function ShopFilters({
+  dict,
   categories,
   activeCategory,
   maxPrice,
   priceCeiling,
   totalCount,
 }: {
+  dict: Dictionary["shop"];
   categories: Category[];
   activeCategory: string;
   maxPrice: number;
@@ -62,7 +65,7 @@ export function ShopFilters({
         onClick={() => setMobileOpen((prev) => !prev)}
         className="mobile-filter-btn flex md:hidden"
       >
-        <span>Filters &amp; Categories</span>
+        <span>{dict.filters}</span>
         <span style={{ fontSize: "18px", fontWeight: "bold" }}>{mobileOpen ? "−" : "+"}</span>
       </button>
 
@@ -75,7 +78,7 @@ export function ShopFilters({
       >
         <div className="filter-block">
           <div className="filter-title">
-            <span>Categories</span>
+            <span>{dict.categories}</span>
             <span>−</span>
           </div>
 
@@ -86,7 +89,7 @@ export function ShopFilters({
               checked={activeCategory === "all"}
               onChange={() => selectCategory("all")}
             />
-            <span>All Products</span>
+            <span>{dict.allProducts}</span>
             <small>{totalCount}</small>
           </label>
           {categories.map((category) => (
@@ -104,7 +107,7 @@ export function ShopFilters({
 
         <div className="filter-block">
           <div className="filter-title">
-            <span>Price Range</span>
+            <span>{dict.priceRange}</span>
             <span>−</span>
           </div>
 

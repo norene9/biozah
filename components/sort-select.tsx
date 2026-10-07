@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
-export function SortSelect({ value }: { value: string }) {
+export function SortSelect({ value, dict }: { value: string; dict: Dictionary["shop"] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -16,12 +17,12 @@ export function SortSelect({ value }: { value: string }) {
 
   return (
     <label className="catalog-sort">
-      <span>Sort by</span>
+      <span>{dict.sortBy}</span>
       <select value={value} onChange={(event) => onChange(event.target.value)}>
-        <option value="featured">Best Selling</option>
-        <option value="newest">Newest</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
+        <option value="featured">{dict.sortFeatured}</option>
+        <option value="newest">{dict.sortNewest}</option>
+        <option value="price-low">{dict.sortPriceLow}</option>
+        <option value="price-high">{dict.sortPriceHigh}</option>
       </select>
     </label>
   );

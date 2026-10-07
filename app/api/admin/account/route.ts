@@ -9,6 +9,10 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   if (!(await getCurrentAdmin())) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  const body = await request.json() as { contactEmail?: string; contactPhone?: string; bio?: string };
-  try { await updateFirestoreStoreSettings({ contactEmail: body.contactEmail?.trim() ?? "", contactPhone: body.contactPhone?.trim() ?? "", bio: body.bio?.trim() ?? "" }); return NextResponse.json({ ok: true }); } catch { return NextResponse.json({ error: "Unable to save store settings." }, { status: 502 }); }
+  const body = (await request.json()) as { contactEmail?: string; contactPhone?: string };
+  // Only touch fields actually provided — never overwrite existing settings with empty strings.
+  const updates: { contactEmail?: string; contactPhone?: string } = {};
+  if (body.contactEmail !== undefined) updates.contactEmail = body.contactEmail.trim();
+  if (body.contactPhone !== undefined) updates.contactPhone = body.contactPhone.trim();
+  try { await updateFirestoreStoreSettings(updates); return NextResponse.json({ ok: true }); } catch { return NextResponse.json({ error: "Unable to save store settings." }, { status: 502 }); }
 }

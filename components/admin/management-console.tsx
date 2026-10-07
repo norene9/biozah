@@ -1,21 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment } from "react";
-import { ProductEditor } from "@/app/admin/products/product-editor";
-import { useMemo, useState, useEffect } from "react";
+import { Fragment, useMemo, useState, useEffect } from "react";
+import { ProductEditor } from "@/app/[lang]/admin/products/product-editor";
 import type { Category, Product, StoredOrder } from "@/types/store";
 import { SafeThumb } from "./safe-thumb";
-import { CategoryForm } from "@/app/admin/categories/category-form";
-import { ProductCreateForm } from "@/app/admin/products/product-create-form";
+import { CategoryForm } from "@/app/[lang]/admin/categories/category-form";
+import { ProductCreateForm } from "@/app/[lang]/admin/products/product-create-form";
 import { useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { OrderDetailModal } from "@/components/admin/orders-detail-modal";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
+
+type AdminDict = Dictionary["admin"];
 
 const LOW_STOCK = 5;
 
-// status is a free-form string in Firestore ("Pending", "Shipped", ...), not a fixed union,
-// so tone is matched case-insensitively with a sensible fallback.
 function statusTone(status: string) {
   const s = status.toLowerCase();
   if (s === "pending" || s === "processing") return "ad-pill--warn";
@@ -28,10 +28,10 @@ function money(value: number, currency = "DZD") {
   return `${value.toLocaleString("en-US")} ${currency}`;
 }
 
-function stockPill(stock: number) {
-  if (stock <= 0) return { label: "Out of stock", tone: "ad-pill--danger" };
-  if (stock <= LOW_STOCK) return { label: `${stock} left`, tone: "ad-pill--warn" };
-  return { label: `${stock} units`, tone: "ad-pill--ok" };
+function stockPill(stock: number, dict: AdminDict) {
+  if (stock <= 0) return { label: dict.outOfStock, tone: "ad-pill--danger" };
+  if (stock <= LOW_STOCK) return { label: dict.stockLeft.replace("{count}", String(stock)), tone: "ad-pill--warn" };
+  return { label: dict.stockUnits.replace("{count}", String(stock)), tone: "ad-pill--ok" };
 }
 
 function Thumb({ src, name }: { src?: string | null; name: string }) {
@@ -64,10 +64,16 @@ export function ManagementConsole({
   initialProducts,
   initialCategories,
   initialOrders,
+  dict,
+  formsDict,
+  ordersDict, // 👈 1. Pass ordersDict explicitly
 }: {
   initialProducts: Product[];
   initialCategories: Category[];
   initialOrders: StoredOrder[];
+  dict: AdminDict;
+  formsDict: Dictionary["forms"];
+  ordersDict: Dictionary["orders"]; // 👈 Typed correctly as Dictionary["orders"]
 }) {
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);
@@ -88,8 +94,8 @@ export function ManagementConsole({
 
   const categoryName = useMemo(() => {
     const map = new Map(categories.map((c) => [c.id, c.name]));
-    return (id: string) => map.get(id) ?? "Uncategorized";
-  }, [categories]);
+    return (id: string) => map.get(id) ?? dict.uncategorized;
+  }, [categories, dict.uncategorized]);
 
   const productCountByCategory = useMemo(() => {
     const counts = new Map<string, number>();
@@ -141,11 +147,13 @@ export function ManagementConsole({
         body: JSON.stringify({ categoryId: category.id }),
       });
       if (!response.ok) {
-        window.alert((await response.json().catch(() => null))?.error ?? "Unable to delete collection.");
+        window.alert(
+          (await response.json().catch(() => null))?.error ?? "Unable to delete collection.",
+        );
         return;
       }
       setCategories((current) => current.filter((item) => item.id !== category.id));
-      router.refresh(); // re-syncs the products table/count now that this category's products are gone too
+      router.refresh();
     } finally {
       setDeleting(false);
       setPendingDeleteCategory(null);
@@ -156,37 +164,37 @@ export function ManagementConsole({
     <>
       <section className="ad-page-head">
         <div>
-          <h1>Store overview.</h1>
-          <p>Products, collections and orders in one place.</p>
+          <h1>{dict.overview}</h1>
+          <p>{dict.overviewSub}</p>
         </div>
         <Link href="/" className="ad-link-btn">
-          Store overview →
+          {dict.storeLink} →
         </Link>
       </section>
 
       <section className="ad-stats" aria-label="Overview">
         <StatCard
-          label="Total revenue"
+          label={dict.totalRevenue}
           value={money(totalRevenue)}
-          note={`${orders.length} orders`}
+          note={`${orders.length} ${dict.orders}`}
           tone="ad-pill--ok"
         />
         <StatCard
-          label="Pending orders"
+          label={dict.pendingOrders}
           value={String(pendingCount)}
-          note={pendingCount > 0 ? "Action needed" : "All clear"}
+          note={pendingCount > 0 ? dict.actionNeeded : dict.allClear}
           tone={pendingCount > 0 ? "ad-pill--warn" : "ad-pill--muted"}
         />
         <StatCard
-          label="Products"
+          label={dict.products}
           value={String(products.length)}
-          note={`${activeProducts} active`}
+          note={`${activeProducts} ${dict.active}`}
           tone="ad-pill--muted"
         />
         <StatCard
-          label="Collections"
+          label={dict.collections}
           value={String(categories.length)}
-          note={`${activeCategories} active`}
+          note={`${activeCategories} ${dict.active}`}
           tone="ad-pill--ok"
         />
       </section>
@@ -194,15 +202,16 @@ export function ManagementConsole({
       <section className="ad-card">
         <div className="ad-card-head">
           <div>
-            <h2>Collections</h2>
-            <p>Organize your products into shopping collections</p>
+            <h2>{dict.collections}</h2>
+            <p>{dict.collectionsSub}</p>
           </div>
           <button type="button" className="ad-btn" onClick={() => setShowCategoryForm(true)}>
-            + New collection
+            {dict.newCollection}
           </button>
         </div>
         {showCategoryForm && (
           <CategoryForm
+            dict={formsDict}
             onClose={() => setShowCategoryForm(false)}
             onCreated={(category?: Category) => {
               setShowCategoryForm(false);
@@ -212,9 +221,7 @@ export function ManagementConsole({
           />
         )}
         {categories.length === 0 ? (
-          <p className="ad-empty">
-            No collections yet. Use "+ New collection" above to create your first one.
-          </p>
+          <p className="ad-empty">{dict.noCollections}</p>
         ) : (
           <div className="ad-cat-grid">
             {categories.map((category) => (
@@ -227,15 +234,15 @@ export function ManagementConsole({
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <p>{category.name}</p>
                   <p>
-                    {productCountByCategory.get(category.id) ?? 0} products
-                    {!category.active && " · Hidden"}
+                    {productCountByCategory.get(category.id) ?? 0} {dict.products}
+                    {!category.active && ` · ${dict.hidden}`}
                   </p>
                 </div>
                 <button
                   type="button"
                   className="ad-icon-btn ad-icon-btn--danger"
-                  aria-label={`Delete ${category.name}`}
-                  title="Delete collection"
+                  aria-label={`${dict.delete} ${category.name}`}
+                  title={dict.deleteCollection}
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -265,13 +272,13 @@ export function ManagementConsole({
       <section className="ad-card">
         <div className="ad-card-head">
           <div>
-            <h2>Products</h2>
-            <p>Manage pricing, stock and images</p>
+            <h2>{dict.products}</h2>
+            <p>{dict.managePricing}</p>
           </div>
           <div className="ad-card-tools">
             <input
               className="ad-input"
-              placeholder="Search products…"
+              placeholder={dict.searchProducts}
               value={productQuery}
               onChange={(e) => setProductQuery(e.target.value)}
             />
@@ -280,7 +287,7 @@ export function ManagementConsole({
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <option value="all">All collections</option>
+              <option value="all">{dict.allCollections}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -288,11 +295,12 @@ export function ManagementConsole({
               ))}
             </select>
             <button type="button" className="ad-btn" onClick={() => setShowProductForm(true)}>
-              + New product
+              {dict.newProduct}
             </button>
           </div>
           {showProductForm && (
             <ProductCreateForm
+              dict={formsDict}
               categories={categories}
               onClose={() => setShowProductForm(false)}
               onCreated={() => {
@@ -304,24 +312,24 @@ export function ManagementConsole({
         </div>
         {filteredProducts.length === 0 ? (
           <p className="ad-empty">
-            {products.length === 0 ? "No products yet." : "No products match your search."}
+            {products.length === 0 ? dict.noProducts : dict.noProductsMatch}
           </p>
         ) : (
           <div className="ad-table-wrap">
             <table className="ad-table">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Collection</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
+                  <th>{dict.productCol}</th>
+                  <th>{dict.collectionCol}</th>
+                  <th>{dict.priceCol}</th>
+                  <th>{dict.stockCol}</th>
+                  <th>{dict.statusCol}</th>
                   <th aria-label="Actions" />
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((product) => {
-                  const badge = stockPill(product.stock);
+                  const badge = stockPill(product.stock, dict);
                   const isEditing = editingProductId === product.id;
                   return (
                     <Fragment key={product.id}>
@@ -344,7 +352,7 @@ export function ManagementConsole({
                           <span
                             className={`ad-pill ${product.active ? "ad-pill--ok" : "ad-pill--muted"}`}
                           >
-                            {product.active ? "Active" : "Hidden"}
+                            {product.active ? dict.activeStatus : dict.hidden}
                           </span>
                         </td>
                         <td style={{ textAlign: "right" }}>
@@ -353,7 +361,7 @@ export function ManagementConsole({
                             className="ad-link-btn"
                             onClick={() => setEditingProductId(isEditing ? null : product.id)}
                           >
-                            {isEditing ? "Close" : "Edit"}
+                            {isEditing ? dict.close : dict.edit}
                           </button>
                         </td>
                       </tr>
@@ -361,6 +369,7 @@ export function ManagementConsole({
                         <tr className="ad-table-expand">
                           <td colSpan={6}>
                             <ProductEditor
+                              dict={formsDict}
                               product={product}
                               categories={categories}
                               onClose={() => setEditingProductId(null)}
@@ -369,7 +378,7 @@ export function ManagementConsole({
                                   current.map((item) => (item.id === updated.id ? updated : item)),
                                 );
                                 setEditingProductId(null);
-                                router.refresh(); // background sync only — the row above already shows the real edit
+                                router.refresh();
                               }}
                             />
                           </td>
@@ -387,13 +396,13 @@ export function ManagementConsole({
       <section className="ad-card">
         <div className="ad-card-head">
           <div>
-            <h2>Orders</h2>
-            <p>Track and fulfill recent purchases</p>
+            <h2>{dict.ordersTitle}</h2>
+            <p>{dict.ordersSub}</p>
           </div>
           <div className="ad-card-tools">
             <input
               className="ad-input"
-              placeholder="Search customer or ID…"
+              placeholder={dict.searchOrders}
               value={orderQuery}
               onChange={(e) => setOrderQuery(e.target.value)}
             />
@@ -402,30 +411,29 @@ export function ManagementConsole({
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="all">All statuses</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-              {/* If you use other status strings in Firestore, add matching options here. */}
+              <option value="all">{dict.allStatuses}</option>
+              <option value="pending">{dict.statusPending}</option>
+              <option value="confirmed">{dict.statusConfirmed}</option>
+              <option value="shipped">{dict.statusShipped}</option>
+              <option value="delivered">{dict.statusDelivered}</option>
+              <option value="cancelled">{dict.statusCancelled}</option>
             </select>
           </div>
         </div>
         {filteredOrders.length === 0 ? (
           <p className="ad-empty">
-            {orders.length === 0 ? "No orders yet." : "No orders match your search."}
+            {orders.length === 0 ? dict.noOrders : dict.noOrdersMatch}
           </p>
         ) : (
           <div className="ad-table-wrap">
             <table className="ad-table">
               <thead>
                 <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Total</th>
-                  <th>Status</th>
+                  <th>{dict.orderCol}</th>
+                  <th>{dict.customerCol}</th>
+                  <th>{dict.dateCol}</th>
+                  <th>{dict.totalCol}</th>
+                  <th>{dict.statusCol}</th>
                   <th aria-label="Details" />
                 </tr>
               </thead>
@@ -438,7 +446,8 @@ export function ManagementConsole({
                         <div style={{ minWidth: 0 }}>
                           <p>{order.customer_name}</p>
                           <p>
-                            {order?.items?.length} item{order?.items?.length === 1 ? "" : "s"}
+                            {order?.items?.length}{" "}
+                            {order?.items?.length === 1 ? dict.itemSingular : dict.itemPlural}
                           </p>
                         </div>
                       </div>
@@ -454,25 +463,9 @@ export function ManagementConsole({
                         className="ad-link-btn"
                         onClick={() => setViewingOrder(order)}
                       >
-                        View
+                        {dict.view}
                       </button>
                     </td>
-                    {viewingOrder && (
-                      <OrderDetailModal
-                        order={viewingOrder}
-                        onClose={() => setViewingOrder(null)}
-                        onUpdated={(updated) => {
-                          setOrders((current) =>
-                            current.map((o) => (o.order_id === updated.order_id ? updated : o)),
-                          );
-                          setViewingOrder(updated);
-                        }}
-                        onDeleted={(orderId) => {
-                          setOrders((current) => current.filter((o) => o.order_id !== orderId));
-                          setViewingOrder(null);
-                        }}
-                      />
-                    )}
                   </tr>
                 ))}
               </tbody>
@@ -481,17 +474,34 @@ export function ManagementConsole({
         )}
       </section>
 
+      {/* 👈 2. Render OrderDetailModal cleanly outside the table */}
+      {viewingOrder && (
+        <OrderDetailModal
+          order={viewingOrder}
+          dict={ordersDict} // 👈 Uses the passed ordersDict object
+          onClose={() => setViewingOrder(null)}
+          onUpdated={(updated) => {
+            setOrders((current) =>
+              current.map((o) => (o.order_id === updated.order_id ? updated : o)),
+            );
+            setViewingOrder(updated);
+          }}
+          onDeleted={(orderId) => {
+            setOrders((current) => current.filter((o) => o.order_id !== orderId));
+            setViewingOrder(null);
+          }}
+        />
+      )}
+
       <ConfirmModal
         open={Boolean(pendingDeleteCategory)}
-        title="Delete collection?"
+        title={dict.deleteCollectionTitle}
         message={
           pendingDeleteCategory
-            ? `"${pendingDeleteCategory.name}" and its ${
-                productCountByCategory.get(pendingDeleteCategory.id) ?? 0
-              } product(s) will be permanently deleted.`
+            ? `"${pendingDeleteCategory.name}" ${dict.deleteCollectionMsg}`
             : ""
         }
-        confirmLabel={deleting ? "Deleting…" : "Delete"}
+        confirmLabel={deleting ? dict.deleting : dict.delete}
         onCancel={() => setPendingDeleteCategory(null)}
         onConfirm={() => pendingDeleteCategory && void deleteCategory(pendingDeleteCategory)}
       />

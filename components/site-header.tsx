@@ -7,13 +7,28 @@ import { signOut } from "firebase/auth";
 import { useCart } from "./cart-provider";
 import { firebaseAuth } from "@/lib/firebase/client";
 import { SearchBar } from "./search-bar";
+import { LanguageSwitcher } from "./language-switcher";
+import { localePath } from "@/lib/i18n/locale-path";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import Image from "next/image";
 import "./site-header.css";
 
-export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
+export function SiteHeader({
+  isAdmin = false,
+  locale,
+  dict,
+}: {
+  isAdmin?: boolean;
+  locale: Locale;
+  dict: Dictionary["header"];
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count } = useCart();
+
+  // Pathname without the locale prefix: "/en/admin/settings" -> "/admin/settings"
+  const path = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
 
   async function logout() {
     try {
@@ -22,16 +37,16 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
       try {
         await signOut(firebaseAuth);
       } finally {
-        window.location.replace("/admin/login");
+        window.location.replace(localePath(locale, "/admin/login"));
       }
     }
   }
 
-  if (isAdmin && pathname.startsWith("/admin")) {
+  if (isAdmin && path.startsWith("/admin")) {
     return (
       <>
         <aside className="admin-sidebar">
-          <Link href="/admin" className="brand">
+          <Link href={localePath(locale, "/admin")} className="brand">
             <Image
               src="/logo.jpg"
               alt="biozah"
@@ -43,25 +58,31 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
             <span className="brand-name">biozah</span>
           </Link>
           <nav className="admin-sidebar-nav" aria-label="Admin navigation">
-            <Link className={pathname === "/admin" ? "active" : ""} href="/admin">
-              Dashboard
+            <Link className={path === "/admin" ? "active" : ""} href={localePath(locale, "/admin")}>
+              {dict.dashboard}
             </Link>
             <Link
-              className={pathname === "/admin/settings/delivery" ? "active" : ""}
-              href="/admin/settings/delivery"
+              className={path === "/admin/settings/delivery" ? "active" : ""}
+              href={localePath(locale, "/admin/settings/delivery")}
             >
-              Delivery Settings
+              {dict.deliverySettings}
             </Link>
-            <Link className={pathname === "/admin/settings" ? "active" : ""} href="/admin/settings">
-              Settings
+            <Link
+              className={path === "/admin/settings" ? "active" : ""}
+              href={localePath(locale, "/admin/settings")}
+            >
+              {dict.settings}
             </Link>
           </nav>
-          <button className="admin-sidebar-signout" type="button" onClick={() => void logout()}>
-            Sign out
-          </button>
+          <div className="admin-sidebar-footer">
+            <LanguageSwitcher />
+            <button className="admin-sidebar-signout" type="button" onClick={() => void logout()}>
+              {dict.signOut}
+            </button>
+          </div>
         </aside>
         <header className="admin-mobile-header">
-          <Link href="/admin" className="brand">
+          <Link href={localePath(locale, "/admin")} className="brand">
             <Image
               src="/logo.jpg"
               alt="biozah"
@@ -82,11 +103,12 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
           </button>
           {mobileOpen && (
             <nav className="admin-mobile-nav">
-              <Link href="/admin">Dashboard</Link>
-              <Link href="/admin/settings/delivery">Delivery Settings</Link>
-              <Link href="/admin/settings">Settings</Link>
+              <Link href={localePath(locale, "/admin")}>{dict.dashboard}</Link>
+              <Link href={localePath(locale, "/admin/settings/delivery")}>{dict.deliverySettings}</Link>
+              <Link href={localePath(locale, "/admin/settings")}>{dict.settings}</Link>
+              <LanguageSwitcher />
               <button type="button" onClick={() => void logout()}>
-                Sign out
+                {dict.signOut}
               </button>
             </nav>
           )}
@@ -97,7 +119,7 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
 
   return (
     <header className="site-header user-header">
-      <Link href="/" className="brand">
+      <Link href={localePath(locale, "/")} className="brand">
         <Image
           src="/logo.jpg"
           alt="biozah"
@@ -109,21 +131,22 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
         <span className="brand-name">biozah</span>
       </Link>
       <nav className={mobileOpen ? "nav open" : "nav"} aria-label="Main navigation">
-        <Link href="/">Home</Link>
-        <Link href="/products" className={pathname === "/products" ? "active" : ""}>
-          Shop
+        <Link href={localePath(locale, "/")}>{dict.home}</Link>
+        <Link href={localePath(locale, "/products")} className={path === "/products" ? "active" : ""}>
+          {dict.shop}
         </Link>
-        <Link href="/categories">Collections</Link>
-        <Link href="/about">About Us</Link>
+        <Link href={localePath(locale, "/categories")}>{dict.collections}</Link>
+        <Link href={localePath(locale, "/about")}>{dict.about}</Link>
       </nav>
 
       <div className="header-actions">
-        <SearchBar />
+        <SearchBar label={dict.search} placeholder={dict.searchPlaceholder} />
+        <LanguageSwitcher />
 
         <Link
-          href="/cart"
+          href={localePath(locale, "/cart")}
           className="cart-link user-bag"
-          aria-label={`Shopping bag, ${count} items`}
+          aria-label={`${dict.cart}, ${count}`}
         >
           <span className="cart-icon" aria-hidden="true">
             <svg
@@ -141,7 +164,7 @@ export function SiteHeader({ isAdmin = false }: { isAdmin?: boolean }) {
               <path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21.5 7H6" />
             </svg>
           </span>
-          <span>Cart ({count})</span>
+          <span>{dict.cart} ({count})</span>
         </Link>
       </div>
 

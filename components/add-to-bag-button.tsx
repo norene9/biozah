@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/types/store";
 import { useCart } from "@/components/cart-provider";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
-export function AddToBagButton({ product }: { product: Product }) {
+export function AddToBagButton({ product, dict }: { product: Product; dict: Dictionary["product"] }) {
   const { items, add } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -31,7 +32,7 @@ export function AddToBagButton({ product }: { product: Product }) {
     timer.current = setTimeout(() => setAdded(false), 1600);
   }
 
-  const label = soldOut ? "Sold out" : atLimit ? "Max in bag" : added ? "Added" : "Add to bag";
+  const label = soldOut ? dict.soldOut : atLimit ? dict.maxInBag : added ? dict.added : dict.addToBag;
 
   return (
     <div className="pcard-actions">
