@@ -8,15 +8,19 @@ import { ProductCard } from "./product-card";
 import { ProductsToolbar } from "./products-toolbar";
 import { ProductDrawer } from "./product-drawer";
 import { StockBadge } from "./stock-badge";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
+
 
 export function ProductsTable({
   initialProducts,
   categories,
   initialPanel,
+  dict,
 }: {
   initialProducts: Product[];
   categories: Category[];
   initialPanel?: string;
+  dict: Dictionary["forms"];
 }) {
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);
@@ -235,6 +239,7 @@ export function ProductsTable({
             categories={categories}
             onClose={closeDrawer}
             onSaved={saved}
+            dict={dict}
           />
         )}
       </section>
@@ -244,6 +249,7 @@ export function ProductsTable({
         message={pendingDelete ? `${pendingDelete.name} will be deleted entirely ` : ""}
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => pendingDelete && void remove(pendingDelete)}
+        dict={dict}
       />
     </>
   );

@@ -3,13 +3,16 @@
 import { useState } from "react";
 import type { Category } from "@/types/store";
 import { ImageUploadField } from "@/app/[lang]/admin/products/image-upload-field";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
 export function CategoryEditor({
   category,
   onSaved,
+  dict,
 }: {
   category: Category;
   onSaved?: () => void;
+  dict: Dictionary["forms"];
 }) {
   const [form, setForm] = useState({
     name: category.name,
@@ -45,6 +48,7 @@ export function CategoryEditor({
     <div className="category-editor">
       <ImageUploadField
         folder="biozah/categories"
+        dict={dict}
         url={form.image_url}
         publicId={form.image_public_id}
         onChange={(url, publicId) => {

@@ -61,6 +61,7 @@
     "settingsSub": "Vos informations de compte et de pied de page.",
     "deliveryTitle": "Zones de livraison.",
     "deliverySub": "Définissez les prix à domicile et point relais pour chaque wilaya.",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer",
      "orders": {
     "changeStatus": "Modifier le statut de la commande",
     "changeStatusHint": "La mise à jour sera enregistrée dans le backend et déclenchera des alertes par e-mail.",
@@ -201,7 +202,8 @@
     "zonesLoadError": "Impossible de charger les zones de livraison.",
     "statusUpdateError": "Impossible de mettre à jour le statut.",
     "orderUpdateError": "Impossible de mettre à jour la commande.",
-    "orderDeleteError": "Impossible de supprimer la commande."
+    "orderDeleteError": "Impossible de supprimer la commande.",
+    "dropImageHere": "Déposez l'image ici"
   },
   "shop": {
     "filters": "Filtres & Catégories",

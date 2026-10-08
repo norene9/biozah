@@ -61,6 +61,8 @@
     "settingsSub": "Your account details and footer information.",
     "deliveryTitle": "Delivery zones.",
     "deliverySub": "Set home and stop-desk prices for each wilaya.",
+    "deleteMessage": "Are you sure you want to delete",
+
      "orders": {
     "changeStatus": "Change order status",
     "changeStatusHint": "Updating will save to backend & trigger email alerts.",
@@ -201,7 +203,8 @@
     "zonesLoadError": "Unable to load delivery pricing zones.",
     "statusUpdateError": "Unable to update status.",
     "orderUpdateError": "Unable to update order.",
-    "orderDeleteError": "Unable to delete order."
+    "orderDeleteError": "Unable to delete order.",
+    "dropImageHere": "Drop image here"
   },
   "shop": {
     "filters": "Filters & Categories",

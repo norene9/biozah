@@ -7,7 +7,8 @@ import {
   updateFirestoreProduct,
 } from "@/lib/firestore";
 import { destroyCloudinaryImage } from "@/lib/cloudinary";
-import type {  Product } from "@/types/store";
+import type { Product } from "@/types/store";
+
 function slugify(value: string) {
   return value
     .trim()
@@ -19,6 +20,7 @@ function slugify(value: string) {
 export async function POST(request: Request) {
   if (!(await getCurrentAdmin()))
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   const body = (await request.json()) as {
     name?: string;
     description?: string;
@@ -31,8 +33,10 @@ export async function POST(request: Request) {
     active?: boolean;
     featured?: boolean;
   };
+
   const name = body.name?.trim();
   const slug = name ? slugify(name) : "";
+
   if (
     !name ||
     !slug ||
@@ -50,6 +54,7 @@ export async function POST(request: Request) {
       { error: "Name, category, price, stock, and a Cloudinary image are required." },
       { status: 400 },
     );
+
   try {
     const product = {
       id: `product-${crypto.randomUUID()}`,
@@ -65,6 +70,7 @@ export async function POST(request: Request) {
       active: body.active ?? true,
       featured: body.featured ?? false,
     };
+
     await createFirestoreProduct(product);
     return NextResponse.json({ ok: true, product });
   } catch {
@@ -75,7 +81,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   if (!(await getCurrentAdmin()))
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
- 
+
   const body = (await request.json()) as {
     productId?: string;
     price?: number;
@@ -89,8 +95,9 @@ export async function PATCH(request: Request) {
     image_public_id?: string;
     discount_percent?: number;
   };
+
   const { productId, price, stock, active, featured } = body;
- 
+
   if (
     !productId ||
     price === undefined ||
@@ -103,16 +110,16 @@ export async function PATCH(request: Request) {
     typeof featured !== "boolean"
   )
     return NextResponse.json({ error: "Valid product fields are required." }, { status: 400 });
- 
+
   if (
     body.discount_percent !== undefined &&
     (!Number.isInteger(body.discount_percent) || body.discount_percent < 0 || body.discount_percent > 99)
   )
     return NextResponse.json({ error: "Discount must be a whole number from 0 to 99." }, { status: 400 });
- 
+
   // Only include fields that were actually sent — Firestore's Admin SDK rejects `undefined` values.
   const updates: Partial<Omit<Product, "id">> = { price, stock, active, featured };
- 
+
   if (body.name !== undefined) {
     const name = body.name.trim();
     if (!name) return NextResponse.json({ error: "Product name cannot be empty." }, { status: 400 });
@@ -123,7 +130,7 @@ export async function PATCH(request: Request) {
   if (body.image_url !== undefined) updates.image_url = body.image_url;
   if (body.image_public_id !== undefined) updates.image_public_id = body.image_public_id;
   if (body.discount_percent !== undefined) updates.discount_percent = body.discount_percent;
- 
+
   try {
     await updateFirestoreProduct(productId, updates);
     return NextResponse.json({ ok: true });
@@ -131,57 +138,30 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Unable to update this product." }, { status: 502 });
   }
 }
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export async function DELETE(request: Request) {
   if (!(await getCurrentAdmin()))
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  const { productId } = (await request.json()) as { productId?: string };
-  if (!productId) return NextResponse.json({ error: "Product is required." }, { status: 400 });
+
+  const { productId } = (await request.json().catch(() => ({}))) as { productId?: string };
+
+  if (!productId)
+    return NextResponse.json({ error: "Product ID is required." }, { status: 400 });
+
   try {
     const product = await getFirestoreProductById(productId);
-    if (product?.image_public_id) await destroyCloudinaryImage(product.image_public_id);
+
+    // Clean up the image from Cloudinary if it exists
+    if (product?.image_public_id) {
+      await destroyCloudinaryImage(product.image_public_id);
+    }
+
+    // Delete the product document from Firestore
     await deleteFirestoreProduct(productId);
+
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "Unable to delete product and its image." }, { status: 502 });
+  } catch (error) {
+    console.error("Product deletion error:", error);
+    return NextResponse.json({ error: "Unable to delete product." }, { status: 502 });
   }
 }

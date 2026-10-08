@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { OrderDetailModal } from "@/components/admin/orders-detail-modal";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
-
+import { CategoryEditor } from "@/app/[lang]/admin/categories/category-editor";
 type AdminDict = Dictionary["admin"];
 
 const LOW_STOCK = 5;
@@ -66,14 +66,14 @@ export function ManagementConsole({
   initialOrders,
   dict,
   formsDict,
-  ordersDict, // 👈 1. Pass ordersDict explicitly
+  ordersDict,
 }: {
   initialProducts: Product[];
   initialCategories: Category[];
   initialOrders: StoredOrder[];
   dict: AdminDict;
   formsDict: Dictionary["forms"];
-  ordersDict: Dictionary["orders"]; // 👈 Typed correctly as Dictionary["orders"]
+  ordersDict: Dictionary["orders"];
 }) {
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);
@@ -92,6 +92,11 @@ export function ManagementConsole({
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [viewingOrder, setViewingOrder] = useState<StoredOrder | null>(null);
 
+  // Deletion modals state
+  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null);
+  const [pendingDeleteProduct, setPendingDeleteProduct] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const categoryName = useMemo(() => {
     const map = new Map(categories.map((c) => [c.id, c.name]));
     return (id: string) => map.get(id) ?? dict.uncategorized;
@@ -135,9 +140,6 @@ export function ManagementConsole({
   const activeProducts = products.filter((p) => p.active).length;
   const activeCategories = categories.filter((c) => c.active).length;
 
-  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
   async function deleteCategory(category: Category) {
     setDeleting(true);
     try {
@@ -157,6 +159,28 @@ export function ManagementConsole({
     } finally {
       setDeleting(false);
       setPendingDeleteCategory(null);
+    }
+  }
+
+  async function deleteProduct(product: Product) {
+    setDeleting(true);
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id }),
+      });
+      if (!response.ok) {
+        window.alert(
+          (await response.json().catch(() => null))?.error ?? "Unable to delete product.",
+        );
+        return;
+      }
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+      router.refresh();
+    } finally {
+      setDeleting(false);
+      setPendingDeleteProduct(null);
     }
   }
 
@@ -224,47 +248,93 @@ export function ManagementConsole({
           <p className="ad-empty">{dict.noCollections}</p>
         ) : (
           <div className="ad-cat-grid">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/admin/categories/${category.id}/edit`}
-                className="ad-cat-tile"
-              >
-                <SafeThumb src={category.image_url} name={category.name} size={44} radius={12} />
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <p>{category.name}</p>
-                  <p>
-                    {productCountByCategory.get(category.id) ?? 0} {dict.products}
-                    {!category.active && ` · ${dict.hidden}`}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="ad-icon-btn ad-icon-btn--danger"
-                  aria-label={`${dict.delete} ${category.name}`}
-                  title={dict.deleteCollection}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setPendingDeleteCategory(category);
-                  }}
+            {categories.map((category) => {
+              const isEditing = editingCategoryId === category.id;
+              return (
+                <div 
+                  key={category.id} 
+                  className="ad-cat-tile-wrapper" 
+                  style={{ gridColumn: isEditing ? "1 / -1" : "auto" }}
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
+                  <div
+                    className="ad-cat-tile"
+                    onClick={() => setEditingCategoryId(isEditing ? null : category.id)}
+                    style={{ cursor: "pointer" }}
                   >
-                    <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
-                  </svg>
-                </button>
-              </Link>
-            ))}
+                    <SafeThumb src={category.image_url} name={category.name} size={44} radius={12} />
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <p>{category.name}</p>
+                      <p>
+                        {productCountByCategory.get(category.id) ?? 0} {dict.products}
+                        {!category.active && ` · ${dict.hidden}`}
+                      </p>
+                    </div>
+
+                    {/* Edit Toggle Button */}
+                    <button
+                      type="button"
+                      className="ad-link-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingCategoryId(isEditing ? null : category.id);
+                      }}
+                    >
+                      {isEditing ? dict.close : dict.edit}
+                    </button>
+
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      className="ad-icon-btn ad-icon-btn--danger"
+                      aria-label={`${dict.delete} ${category.name}`}
+                      title={dict.deleteCollection}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setPendingDeleteCategory(category);
+                      }}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Inline Expanded Category Editor */}
+                  {isEditing && (
+                    <div 
+                      className="ad-cat-expand" 
+                      style={{ 
+                        marginTop: 12, 
+                        padding: 16, 
+                        background: "var(--ad-bg-subtle, #f9fafb)", 
+                        borderRadius: 12,
+                        border: "1px solid var(--ad-border, #e5e7eb)" 
+                      }}
+                    >
+                      <CategoryEditor
+                        category={category}
+                        dict={formsDict}
+                        onSaved={() => {
+                          setEditingCategoryId(null);
+                          router.refresh();
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
@@ -324,7 +394,8 @@ export function ManagementConsole({
                   <th>{dict.priceCol}</th>
                   <th>{dict.stockCol}</th>
                   <th>{dict.statusCol}</th>
-                  <th aria-label="Actions" />
+                  <th>{dict.edit}</th>
+                  <th>{dict.delete}</th>
                 </tr>
               </thead>
               <tbody>
@@ -364,10 +435,19 @@ export function ManagementConsole({
                             {isEditing ? dict.close : dict.edit}
                           </button>
                         </td>
+                        <td style={{ textAlign: "right" }}>
+                          <button
+                            type="button"
+                            className="ad-link-btn ad-link-btn--danger"
+                            onClick={() => setPendingDeleteProduct(product)}
+                          >
+                            {dict.delete}
+                          </button>
+                        </td>
                       </tr>
                       {isEditing && (
                         <tr className="ad-table-expand">
-                          <td colSpan={6}>
+                          <td colSpan={7}>
                             <ProductEditor
                               dict={formsDict}
                               product={product}
@@ -474,11 +554,10 @@ export function ManagementConsole({
         )}
       </section>
 
-      {/* 👈 2. Render OrderDetailModal cleanly outside the table */}
       {viewingOrder && (
         <OrderDetailModal
           order={viewingOrder}
-          dict={ordersDict} // 👈 Uses the passed ordersDict object
+          dict={ordersDict}
           onClose={() => setViewingOrder(null)}
           onUpdated={(updated) => {
             setOrders((current) =>
@@ -493,6 +572,7 @@ export function ManagementConsole({
         />
       )}
 
+      {/* Category Delete Confirmation Modal */}
       <ConfirmModal
         open={Boolean(pendingDeleteCategory)}
         title={dict.deleteCollectionTitle}
@@ -504,6 +584,22 @@ export function ManagementConsole({
         confirmLabel={deleting ? dict.deleting : dict.delete}
         onCancel={() => setPendingDeleteCategory(null)}
         onConfirm={() => pendingDeleteCategory && void deleteCategory(pendingDeleteCategory)}
+        dict={formsDict}
+      />
+
+      {/* Product Delete Confirmation Modal */}
+      <ConfirmModal
+        open={Boolean(pendingDeleteProduct)}
+        title={dict.delete ?? "Delete Product"}
+        message={
+          pendingDeleteProduct
+            ? `${dict.deleteMessage}\n ${pendingDeleteProduct.name}`
+            : ""
+        }
+        confirmLabel={deleting ? dict.deleting : dict.delete}
+        onCancel={() => setPendingDeleteProduct(null)}
+        onConfirm={() => pendingDeleteProduct && void deleteProduct(pendingDeleteProduct)}
+        dict={formsDict}
       />
     </>
   );

@@ -69,6 +69,7 @@ export function CategoryForm({
           url={image.url}
           publicId={image.publicId}
           onChange={(url, publicId) => setImage({ url, publicId })}
+          dict={dict}
         />
         <label>
           {dict.name}

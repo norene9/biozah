@@ -103,7 +103,9 @@
       "delivered": "تم التوصيل",
       "cancelled": "تم الإلغاء"
     }
-  }
+   
+  },
+   "deleteMessage": "هل أنت متأكد أنك تريد حذف"
   },
   "forms": {
     "cancel": "إلغاء",
@@ -200,7 +202,8 @@
     "zonesLoadError": "تعذر تحميل مناطق التوصيل.",
     "statusUpdateError": "تعذر تحديث الحالة.",
     "orderUpdateError": "تعذر تحديث الطلب.",
-    "orderDeleteError": "تعذر حذف الطلب."
+    "orderDeleteError": "تعذر حذف الطلب.",
+    "dropImageHere": "اسحب الصورة هنا"
   },
   "shop": {
     "filters": "الفلاتر والفئات",
