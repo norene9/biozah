@@ -1,29 +1,22 @@
 .site-header.user-header {
   position: relative;
-
   width: min(1440px, calc(100% - 48px));
   height: 72px;
-
   margin: 0 auto;
-
   display: flex;
   align-items: center;
-
   background: transparent;
-
   color: #29372f;
 }
 
-/* LOGO */
+/* ---------- Logo ---------- */
 
 .user-header .brand {
   flex-shrink: 0;
-
-  text-decoration: none;
-  color: #29372f;
-
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: #29372f;
 }
 
 .user-header .brand-name {
@@ -33,212 +26,55 @@
   text-transform: lowercase;
 }
 
-/* NAVIGATION */
+/* ---------- Navigation ---------- */
 
 .user-header .nav {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-
   display: flex;
   align-items: center;
   gap: 27px;
-
   white-space: nowrap;
 }
 
 .user-header .nav a {
   position: relative;
-
   padding: 26px 0;
-
+  color: #53635a;
   text-decoration: none;
-
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.01em;
-
-  color: #53635a;
-
   transition: color 0.2s ease;
 }
 
-.user-header .nav a:hover {
-  color: #29372f;
-}
-
+.user-header .nav a:hover,
 .user-header .nav a.active {
   color: #29372f;
 }
 
-/* Small line underneath active item */
-
 .user-header .nav a.active::after {
   content: "";
-
   position: absolute;
   left: 0;
   right: 0;
   bottom: 19px;
-
   height: 1px;
-
   background: #637c6c;
 }
 
-/* RIGHT SIDE */
+/* ---------- Right side ---------- */
 
 .header-actions {
   margin-left: auto;
-
   display: flex;
   align-items: center;
   gap: 22px;
 }
 
-/* SEARCH */
+/* ---------- Search ---------- */
 
-.search-button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  padding: 0;
-
-  border: 0;
-  background: transparent;
-
-  color: #53635a;
-
-  font-family: inherit;
-  font-size: 10px;
-
-  cursor: pointer;
-}
-
-.search-button:hover {
-  color: #29372f;
-}
-
-/* CART */
-
-.user-header .user-bag {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  text-decoration: none;
-
-  color: #29372f;
-
-  font-size: 10px;
-}
-
-.cart-icon {
-  width: 20px;
-  height: 20px;
-
-  border-radius: 50%;
-
-  display: grid;
-  place-items: center;
-
-  background: #29372f;
-  color: white;
-}
-
-/* MOBILE MENU BUTTON */
-
-.user-menu-button {
-  display: none;
-
-  width: 30px;
-  height: 30px;
-
-  padding: 0;
-
-  border: 0;
-  background: transparent;
-
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-
-  cursor: pointer;
-}
-
-.user-menu-button span {
-  display: block;
-
-  width: 18px;
-  height: 1px;
-
-  background: #29372f;
-}
-@media (max-width: 760px) {
-  .site-header.user-header {
-    width: calc(100% - 32px);
-    height: 64px;
-  }
-
-  .user-header .brand-name {
-    font-size: 15px;
-  }
-
-  .user-header .nav {
-    position: absolute;
-
-    top: 64px;
-    left: 0;
-    right: 0;
-
-    transform: none;
-
-    padding: 20px;
-
-    display: none;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-
-    background: #f4f7f3;
-
-    border-radius: 14px;
-
-    box-shadow: 0 15px 35px rgba(41, 55, 47, 0.08);
-
-    z-index: 20;
-  }
-
-  .user-header .nav.open {
-    display: flex;
-  }
-
-  .user-header .nav a {
-    width: 100%;
-
-    padding: 13px 0;
-
-    font-size: 12px;
-  }
-
-  .user-header .nav a.active::after {
-    display: none;
-  }
-
-  .header-actions {
-    margin-left: auto;
-    margin-right: 12px;
-  }
-
-  .search-button span {
-    display: none;
-  }
-
-  .user-menu-button {
-    display: flex;
-  }
-}
 .search-button {
   display: inline-flex;
   align-items: center;
@@ -249,8 +85,13 @@
   border-radius: 999px;
   background: transparent;
   color: #1a3d36;
+  font-family: inherit;
   font-size: 0.9rem;
   cursor: pointer;
+}
+
+.search-button:hover {
+  color: #29372f;
 }
 
 .search-form {
@@ -272,8 +113,8 @@
   border: 0;
   outline: 0;
   background: transparent;
-  font-size: 0.9rem;
   color: inherit;
+  font-size: 0.9rem;
 }
 
 .search-close {
@@ -289,21 +130,157 @@
   cursor: pointer;
 }
 
+/* ---------- Cart ---------- */
+
 .cart-link.user-bag {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  color: #29372f;
+  text-decoration: none;
+  font-size: 10px;
 }
 
+/* The icon itself: no circle, no fill behind it — just a bold outline in the ink color */
 .cart-icon {
   display: inline-flex;
+  width: 24px;
+  height: 24px;
+  color: #29372f;
 }
 
-@media (max-width: 480px) {
+.cart-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Count shown as a small solid badge instead of wrapping the whole icon */
+.cart-count-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #29372f;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .cart-link.user-bag:hover .cart-icon {
+    color: #1a241e;
+  }
+}
+
+/* ---------- Mobile menu button ---------- */
+
+.user-menu-button {
+  display: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.user-menu-button span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: #29372f;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 760px) {
+  .site-header.user-header {
+    width: calc(100% - 32px);
+    height: 64px;
+  }
+
+  .user-header .brand-name {
+    font-size: 15px;
+  }
+
+  .user-header .nav {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    transform: none;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    background: #f4f7f3;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(41, 55, 47, 0.08);
+    z-index: 20;
+  }
+
+  .user-header .nav.open {
+    display: flex;
+  }
+
+  .user-header .nav a {
+    width: 100%;
+    padding: 13px 0;
+    font-size: 12px;
+  }
+
+  .user-header .nav a.active::after {
+    display: none;
+  }
+
+  .header-actions {
+    margin-left: auto;
+    margin-right: 12px;
+  }
+
+  .search-button span {
+    display: none; /* icon-only on small screens, still a real 40px tap target */
+  }
+
   .search-form {
     width: 160px;
   }
-  .search-button span {
-    display: none; /* icon-only on very small screens, still 40px tall for a real tap target */
+
+  .user-menu-button {
+    display: flex;
+  }
+}
+/* Append to site-header.css */
+
+/* Desktop: language switcher sits in the top row; the mobile-menu copy stays hidden */
+.nav-lang {
+  display: none;
+}
+
+/* Below 760px: the top-row copy hides, the one inside the slide-down nav takes over
+   (same split your admin header already uses between .admin-sidebar and
+   .admin-mobile-nav) */
+@media (max-width: 760px) {
+  .header-actions-lang {
+    display: none;
+  }
+
+  .nav-lang {
+    display: block;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
   }
 }

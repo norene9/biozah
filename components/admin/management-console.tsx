@@ -176,7 +176,7 @@ export function ManagementConsole({
         <StatCard
           label={dict.totalRevenue}
           value={money(totalRevenue)}
-          note={`${orders.length} ${dict.orders}`}
+          note={`${orders.length} ${dict.orders.total}`}
           tone="ad-pill--ok"
         />
         <StatCard

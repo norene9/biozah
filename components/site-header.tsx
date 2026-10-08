@@ -11,6 +11,7 @@ import { LanguageSwitcher } from "./language-switcher";
 import { localePath } from "@/lib/i18n/locale-path";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import "./site-header.css";
 
@@ -130,18 +131,33 @@ export function SiteHeader({
         />
         <span className="brand-name">biozah</span>
       </Link>
+
       <nav className={mobileOpen ? "nav open" : "nav"} aria-label="Main navigation">
         <Link href={localePath(locale, "/")}>{dict.home}</Link>
-        <Link href={localePath(locale, "/products")} className={path === "/products" ? "active" : ""}>
+        <Link
+          href={localePath(locale, "/products")}
+          className={path === "/products" ? "active" : ""}
+        >
           {dict.shop}
         </Link>
         <Link href={localePath(locale, "/categories")}>{dict.collections}</Link>
         <Link href={localePath(locale, "/about")}>{dict.about}</Link>
+
+        {/* Shown only inside the mobile dropdown (hidden here on desktop via CSS) —
+            the header-actions copy below is the one visible on desktop. */}
+        <div className="nav-lang">
+          <LanguageSwitcher />
+        </div>
       </nav>
 
       <div className="header-actions">
         <SearchBar label={dict.search} placeholder={dict.searchPlaceholder} />
-        <LanguageSwitcher />
+
+        {/* Desktop copy — hidden on narrow screens via CSS so it doesn't crowd the top row;
+            the nav-lang copy above takes over inside the mobile menu instead. */}
+        <div className="header-actions-lang">
+          <LanguageSwitcher />
+        </div>
 
         <Link
           href={localePath(locale, "/cart")}
@@ -149,22 +165,9 @@ export function SiteHeader({
           aria-label={`${dict.cart}, ${count}`}
         >
           <span className="cart-icon" aria-hidden="true">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="18" cy="21" r="1" />
-              <path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21.5 7H6" />
-            </svg>
+            <ShoppingCart size={20} strokeWidth={1.6} />
           </span>
-          <span>{dict.cart} ({count})</span>
+          {count > 0 && <span className="cart-count">{count}</span>}
         </Link>
       </div>
 
@@ -181,3 +184,4 @@ export function SiteHeader({
     </header>
   );
 }
+
