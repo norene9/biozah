@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import type { Category } from "@/types/store";
 import { CategoryEditor } from "../categories/category-editor";
-
-export function CollectionEditModal({ category }: { category: Category }) {
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
+export function CollectionEditModal({ category, dict }: { category: Category; dict: Dictionary["forms"] }) {
   const router = useRouter();
 
   const closeModal = () => {
@@ -36,7 +36,7 @@ export function CollectionEditModal({ category }: { category: Category }) {
           </button>
         </div>
 
-        <CategoryEditor category={category} />
+        <CategoryEditor category={category} dict={dict} />
 
         <footer className="drawer-footer"></footer>
       </section>
